@@ -544,7 +544,7 @@ end
 function grab_slice(h, ptpath, label, n, color, orientation, em, ...
                     eNID, sag)
 global sliceinfo;
-targetdir = [ptpath 'Imaging/Sliceimages']; 
+targetdir = [ptpath 'Imaging/Recon/figs']; 
 if ~exist(targetdir, 'dir')
     mkdir(targetdir);
 end

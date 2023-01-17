@@ -64,7 +64,8 @@ class OpsceaMaker(ABC):
                    'Imaging/Meshes',
                    'Imaging/Meshes/Subcortical',
                    'Imaging/MRI',
-                   'Imaging/Sliceimages']
+                   'Imaging/Recon/figs',
+                   'Imaging/Recon/labels']
         
         mritargets = ['aparc+aseg', 'brain']
 
@@ -102,16 +103,22 @@ class OpsceaMaker(ABC):
                     shutil.copy2(os.path.join(self.freesurfer_subjdir, 'mri', mt + '.mgz'), 
                                  os.path.join(self.opscea_subjdir, t))
 
-            else: # t=='Imaging/Sliceimages'
-                self.do_imaging_sliceimages()
+            elif t=='Imaging/Recon/figs':
+                self.do_imaging_recon_figs()
+            
+            else: # t=='Imaging/Recon/labels'
+                self.do_imaging_recon_labels()
 
     @abstractmethod
     def do_imaging_elecs(self):
         pass
-
-    def do_imaging_sliceimages(self):
+    
+    def do_imaging_recon_figs(self):
+        pass
+    
+    def do_imaging_recon_labels(self):
         if self.do_label:
-            self.do_label_output(os.path.join(self.opscea_subjdir, 'Imaging/Sliceimages'))
+            self.do_label_output(os.path.join(self.opscea_subjdir, 'Imaging/Recon/labels'))
         
     def do_seizure_dirs(self):
         # process bad channel list if it's there
@@ -412,12 +419,10 @@ class BrainstormOpsceaMaker(OpsceaMaker):
         min_size = 1
         return np.linalg.norm(np.sum(abs(elecmatrix), axis=0)) >= min_size
 
-    def do_imaging_sliceimages(self):
+    def do_imaging_recon_figs(self):
         bsimages = glob(os.path.join(self.freesurfer_subjdir, 'ct', '*.png'))
         for bsi in bsimages:
-            shutil.copy2(bsi, os.path.join(self.opscea_subjdir, 'Imaging/Sliceimages'))
-        if self.do_label:
-            self.do_label_output(os.path.join(self.opscea_subjdir, 'Imaging/Sliceimages'))
+            shutil.copy2(bsi, os.path.join(self.opscea_subjdir, 'Imaging/Recon/figs'))
 
 class ChanfileException(Exception):
     pass

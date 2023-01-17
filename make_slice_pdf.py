@@ -7,9 +7,11 @@ subjname = sys.argv[1]
 
 path_to_opsceadata = "/Users/aaron/Documents/MATLAB/OPSCEA-main/OPSCEADATA"
 opscea_subjdir = os.path.join(path_to_opsceadata, subjname)
-opscea_slicedir = os.path.join(opscea_subjdir, "Imaging", "Sliceimages")
+opscea_texdir = os.path.join(opscea_subjdir, "Imaging", "Recon")
+opscea_slicedir = os.path.join(opscea_texdir, "figs")
+opscea_labeldir = os.path.join(opscea_texdir, "labels")
 
-texfname = os.path.join(opscea_slicedir, subjname + "_recon.tex")
+texfname = os.path.join(opscea_texdir, subjname + "_recon.tex")
 texf = open(texfname, 'w')
 
 preamble = "\\documentclass[12pt]{article}\n\\usepackage{graphicx}\n\\usepackage{hyperref}\n\\hypersetup{colorlinks=true,linkcolor=blue}\n\\renewcommand{\\familydefault}{\\sfdefault}\n\\title{" + subjname + " ICEEG Implant Reconstruction}\n\\begin{document}\n\\maketitle\n\n\\tableofcontents\n\clearpage\n\n"
@@ -42,7 +44,7 @@ for f in imgfiles:
     axial_nonsurf = os.path.join(os.path.dirname(f), fparts[0] + "_" + fparts[1] + "_a.png")
     coronal_nonsurf = os.path.join(os.path.dirname(f), fparts[0] + "_" + fparts[1] + "_c.png")
     elecname = fparts[1]
-    labelfile = os.path.join(os.path.dirname(f), elecname + "_labels")
+    labelfile = os.path.join(opscea_labeldir, elecname + "_labels")
     texlines = "\\section{" + elecname + "}\n\\subsection{" + elecname + " Axial View}\n\\includegraphics[width=" + str(surfsize_a) + "\\textwidth]{" + axial_surf + "}\\\\\n\\includegraphics[width=" + str(slicesize_a) + "\\textwidth]{" + axial_nonsurf + "}\n\n\\subsection{" + elecname + " Coronal View}\n\\includegraphics[width=" + str(surfsize_c) + "\\textwidth]{" + coronal_surf + "}\\\\\n\\includegraphics[width=" + str(slicesize_c) + "\\textwidth]{" + coronal_nonsurf + "}\n\n\\subsection{" + elecname + " Freesurfer Labels}\n\\begin{tabular}{ll}\n\\input{" + labelfile + "}\n\\end{tabular}\n\\clearpage\n\n"
     texf.write(texlines)
 
@@ -51,5 +53,5 @@ texf.write(postamble)
 
 texf.close()
 
-os.system("pdflatex -output-directory " + opscea_slicedir + " " + texfname)
-os.system("pdflatex -output-directory " + opscea_slicedir + " " + texfname)
+os.system("pdflatex -output-directory " + opscea_texdir + " " + texfname)
+os.system("pdflatex -output-directory " + opscea_texdir + " " + texfname)
