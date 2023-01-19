@@ -14,6 +14,10 @@ opscea_labeldir = os.path.join(opscea_texdir, "labels")
 texfname = os.path.join(opscea_texdir, subjname + "_recon.tex")
 texf = open(texfname, 'w')
 
+subjname_parts = subjname.split("_")
+if len(subjname_parts) > 1:
+    subjname = "\_".join(subjname_parts)
+
 preamble = "\\documentclass[12pt]{article}\n\\usepackage{graphicx}\n\\usepackage{hyperref}\n\\hypersetup{colorlinks=true,linkcolor=blue}\n\\renewcommand{\\familydefault}{\\sfdefault}\n\\title{" + subjname + " ICEEG Implant Reconstruction}\n\\begin{document}\n\\maketitle\n\n\\tableofcontents\n\clearpage\n\n"
 texf.write(preamble)
 
