@@ -537,31 +537,15 @@ end
 cd(szpath) % Save video in the same data folder for that seizure
 if showlabels
     vidfilename=[szfname(1:end-6) '_video']; 
+    vidfilename = [vidfilename '_' num2str(S.fps) 'fps'];
     while exist([vidfilename '.mp4'], 'file')
         vidfilename = [vidfilename '_1'];
     end
-else 
-    fps_str = '';
-    if S.fps > 1
-        fps_str = ['_' num2str(S.fps) 'fps'];
-    end
-    vidfilename=[num2str(str2num(pt(3:end))*11) '_' sz fps_str]; 
+else    
+    vidfilename = [num2str(str2num(pt(3:end))*11) '_' sz]; 
 end
 v=VideoWriter(vidfilename,'MPEG-4'); 
 v.FrameRate = 15; 
 open(v); 
 writeVideo(v,F); 
 close(v); 
-
-angle_threshold = 0.99;
-b_threshold = 3;
-
-for i=1:size(theta_b,1)
-    for j=i+1:size(theta_b,1)
-        if abs(cos(theta_b(i,1) - theta_b(j,1))) > angle_threshold && ...
-                abs(theta_b(i,2) - theta_b(j,2)) <= b_threshold
-            abs(cos(theta_b(i,1) - theta_b(j,1)));
-        end
-    end
-end
-
