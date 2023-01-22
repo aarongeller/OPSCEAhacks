@@ -10,7 +10,6 @@
 # have been localized, with EEG saved as edf files under SUBJ/eeg.
 
 import os, sys, shutil, scipy.io, mne
-from img_pipe import img_pipe
 import numpy as np
 import numpy.matlib
 import pandas as pd
@@ -41,8 +40,8 @@ class OpsceaMaker(ABC):
         else:
             self.numberlabels = []
 
-        path_to_freesurfer = "/Applications/freesurfer/subjects"
-        self.freesurfer_subjdir = os.path.join(path_to_freesurfer, self.subjname)
+        os.environ['SUBJECTS_DIR'] = os.path.join(os.environ['FREESURFER_HOME'], "subjects")
+        self.freesurfer_subjdir = os.path.join(os.environ['SUBJECTS_DIR'], self.subjname)
         self.fs_eeg_dir = os.path.join(self.freesurfer_subjdir, 'eeg')
         self.all_eeg_files = glob(os.path.join(self.fs_eeg_dir, '*.edf'))
         self.all_eeg_files.sort()
@@ -72,6 +71,7 @@ class OpsceaMaker(ABC):
         fs_mesh_dir = os.path.join(self.freesurfer_subjdir, 'Meshes')
         fs_surf_dir = os.path.join(self.freesurfer_subjdir, 'surf')
     
+        from img_pipe import img_pipe # wait to import until after environment variables are set
         self.patient = img_pipe.freeCoG(subj = self.subjname, hem = self.hem)
         self.patient.convert_fsmesh2mlab()
         if self.do_subcort:
