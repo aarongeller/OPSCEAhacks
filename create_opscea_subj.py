@@ -162,6 +162,7 @@ class OpsceaMaker(ABC):
             fstem = f.split('/')[-1][:-4]
             fstemparts = fstem.split("_")
 
+            # handle patient labels with underscore(s)
             if len(fstemparts)==8:
                 ptlabel_limit = 1
             elif len(fstemparts)==9:
@@ -169,7 +170,7 @@ class OpsceaMaker(ABC):
             else:
                 raise EEGFilenameException("Unexpected format for patient label.")
 
-            szmatname = "_".join(fstemparts[:ptlabel_limit]) + sznumstr + "__" + "_".join(fstemparts[1:]) + "_sz.mat"
+            szmatname = "_".join(fstemparts[:ptlabel_limit]) + sznumstr + "__" + "_".join(fstemparts[ptlabel_limit:]) + "_sz.mat"
             output_path = os.path.join(szdir, szmatname)
             scipy.io.savemat(output_path, {'d': d, 'sfx': sfx})
 
