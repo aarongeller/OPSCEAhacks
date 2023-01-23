@@ -2,7 +2,7 @@
 
 ## Overview
 My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March 2022 version).  Main functions provided:
-1. Using [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction) for electrode localization;
+1. Using [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction) output for electrode localization;
 2. A function, `OPSCEA_struct`, that exports slice images (without EEG heatmaps, including both coronal and axial/sagittal view) and compiles a pdf document of the reconstruction.
 
 ## Workflow
