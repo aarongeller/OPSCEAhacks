@@ -22,6 +22,6 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
 5. Run `OPSCEA.m` or `OPSCEA_struct.m`.
 
 ## Future Directions
-1. Allow use of CAT12 recons;
+1. Allow use of [CAT12](https://neuro-jena.github.io/cat/) recons;
 2. Add [epileptogenicity score](https://pubmed.ncbi.nlm.nih.gov/18556663/) as alternate to line-length for EEG heatmaps;
 3. Parallelize movie rendering.
