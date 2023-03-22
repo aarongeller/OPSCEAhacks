@@ -149,7 +149,7 @@ class OpsceaMaker(ABC):
             raw = mne.io.read_raw_edf(f, preload=True, verbose=False) 
             # get SR
             sfx = raw.info.get('sfreq')
-    
+
             d_unfiltered = raw.get_data(picks=self.included_channels) # this reorders channels according to contiguous_labels
             d = mne.filter.notch_filter(d_unfiltered, sfx, 60, verbose=False) # mne 60 hz notch with default settings
 
