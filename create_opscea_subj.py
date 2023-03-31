@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-# usage: python3.8 create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <number-elecs>
+# usage: python3.8 create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>
 # where SUBJ is a directory in /Applications/freesurfer/subjects
 
-# optional args hemisphere, do_subcort, do_label and numberlabels
-# (list of electrodes ending with a digit)
+# optional args hemisphere, do_subcort, do_label, numberlabels, low pass freq, and
+# list of electrodes ending with a digit
 
 # The script assumes recon-all has been done for SUBJ and electrodes
 # have been localized, with EEG saved as edf files under SUBJ/eeg.
@@ -36,7 +36,12 @@ class OpsceaMaker(ABC):
             self.do_label = 1
 
         if len(sys.argv)>5:
-            self.numberlabels = sys.argv[5:]
+            self.lowpass = int(sys.argv[5])
+        else:
+            self.lowpass = -1
+
+        if len(sys.argv)>6:
+            self.numberlabels = sys.argv[6:]
         else:
             self.numberlabels = []
 
@@ -151,7 +156,12 @@ class OpsceaMaker(ABC):
             sfx = raw.info.get('sfreq')
 
             d_unfiltered = raw.get_data(picks=self.included_channels) # this reorders channels according to contiguous_labels
-            d = mne.filter.notch_filter(d_unfiltered, sfx, 60, verbose=False) # mne 60 hz notch with default settings
+            if self.lowpass > 0:
+                d = mne.filter.filter_data(d_unfiltered, sfx, l_freq=None, h_freq=self.lowpass, verbose=False)
+                if self.lowpass > 60:
+                    d = mne.filter.notch_filter(d, sfx, 60, verbose=False)
+            else:
+                d = mne.filter.notch_filter(d_unfiltered, sfx, 60, verbose=False) # mne 60 hz notch with default settings
 
             sznumstr = "_%02d" % int(i+1)
             szstring = self.subjname + sznumstr
