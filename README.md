@@ -5,7 +5,7 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
 
 ### Main functionality added:
 1. Using [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction) output for electrode localization;
-2. A function, `OPSCEA_struct`, that exports slice images (without EEG heatmaps, including both coronal and axial/sagittal views) and compiles a pdf document of the reconstruction.
+2. A function, `OPSCEA_recon`, that exports slice images (without EEG heatmaps, including both coronal and axial/sagittal views) and compiles a pdf document of the reconstruction.
 
 ### Minor tweaks:
 1. Simplified interface for OPSCEAparams.xls, that eliminates the need to specify the extreme contacts and desired color code for each electrode.
@@ -19,7 +19,7 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
  * Export whole-brain figures of recon.
 3. Run `create_opscea_subj.py`
 4. Edit OPSCEAparams.xls
-5. Run `OPSCEA.m` or `OPSCEA_struct.m`.
+5. Run `OPSCEA.m` or `OPSCEA_recon.m`.
 
 ## Future Directions
 1. Allow use of [CAT12](https://neuro-jena.github.io/cat/) recons;
