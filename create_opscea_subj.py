@@ -1,11 +1,5 @@
 #!/usr/bin/python
 
-# usage: python3.8 create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>
-# where SUBJ is a directory in /Applications/freesurfer/subjects
-
-# optional args hemisphere, do_subcort, do_label, numberlabels, low pass freq, and
-# list of electrodes ending with a digit
-
 # The script assumes recon-all has been done for SUBJ and electrodes
 # have been localized, with EEG saved as edf files under SUBJ/eeg.
 
@@ -18,6 +12,12 @@ from abc import ABC, abstractmethod
 
 class OpsceaMaker(ABC):
     def __init__(self):
+        if len(sys.argv) < 2:
+            print("Usage: python3.8 create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>")
+            print("\twhere SUBJ is a directory in /Applications/freesurfer/subjects")
+            print("\toptional args: hemisphere, do_subcort, do_label, numberlabels, low pass freq, and list of electrodes ending with a digit.")
+            quit()
+            
         self.subjname = sys.argv[1]
 
         if len(sys.argv)>2:
