@@ -12,6 +12,20 @@ from abc import ABC, abstractmethod
 
 class OpsceaMaker(ABC):
     def __init__(self):
+        self.handle_args()
+
+        os.environ['SUBJECTS_DIR'] = os.path.join(os.environ['FREESURFER_HOME'], "subjects")
+        self.freesurfer_subjdir = os.path.join(os.environ['SUBJECTS_DIR'], self.subjname)
+        self.fs_eeg_dir = os.path.join(self.freesurfer_subjdir, 'eeg')
+        self.all_eeg_files = glob(os.path.join(self.fs_eeg_dir, '*.edf'))
+        self.all_eeg_files.sort()
+
+        path_to_opsceadata = "/Users/aaron/Documents/MATLAB/OPSCEA-main/OPSCEADATA"
+        self.opscea_subjdir = os.path.join(path_to_opsceadata, self.subjname)
+
+        # path_to_imgpipe = "/opt/local/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/img_pipe"
+
+    def handle_args(self):
         if len(sys.argv) < 2:
             print("Usage: python3.8 create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>")
             print("\twhere SUBJ is a directory in /Applications/freesurfer/subjects")
@@ -44,17 +58,6 @@ class OpsceaMaker(ABC):
             self.numberlabels = sys.argv[6:]
         else:
             self.numberlabels = []
-
-        os.environ['SUBJECTS_DIR'] = os.path.join(os.environ['FREESURFER_HOME'], "subjects")
-        self.freesurfer_subjdir = os.path.join(os.environ['SUBJECTS_DIR'], self.subjname)
-        self.fs_eeg_dir = os.path.join(self.freesurfer_subjdir, 'eeg')
-        self.all_eeg_files = glob(os.path.join(self.fs_eeg_dir, '*.edf'))
-        self.all_eeg_files.sort()
-
-        path_to_opsceadata = "/Users/aaron/Documents/MATLAB/OPSCEA-main/OPSCEADATA"
-        self.opscea_subjdir = os.path.join(path_to_opsceadata, self.subjname)
-
-        # path_to_imgpipe = "/opt/local/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/img_pipe"
 
     def driver(self):
         self.do_imaging_dirs()
