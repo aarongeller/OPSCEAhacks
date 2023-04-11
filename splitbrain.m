@@ -53,6 +53,7 @@ thegap = max([abs(5.*m) 10]);
 
 if strcmp(orientation, 'c')
     if (min(cortex.cortex.vert(:,2)) < b) && (b < max(cortex.cortex.vert(:,2)))
+        % coronal view uses a cut in the XY plane
         [idx, ~] = sort(find(abs((cortex.cortex.vert(:,2) - (m.*cortex.cortex.vert(:,1) + b + thegap))) <= thegap)); 
         % get indices of verts with y between (mx + b) and (mx + b + 2*thegap)
     else 
@@ -62,6 +63,7 @@ if strcmp(orientation, 'c')
     end
     
 elseif strcmp(orientation, 'a') || strcmp(orientation, 's')
+    % both axial and sagittal views use a cut in the XZ plane
     if (min(cortex.cortex.vert(:,3)) < b) && (b < max(cortex.cortex.vert(:,3)))
         [idx, ~] = sort(find(abs((cortex.cortex.vert(:,3) - (m.*cortex.cortex.vert(:,1) + b - thegap))) <= thegap)); 
         % get indices of verts with z between (mx + b - 2*thegap) and (mx + b)
@@ -72,6 +74,7 @@ elseif strcmp(orientation, 'a') || strcmp(orientation, 's')
     end
 
 elseif strcmp(orientation, 'oc')
+    % oblique coronal view uses a cut in the YZ plane
     [idx, ~] = sort(find(abs((cortex.cortex.vert(:,3) - (m.*cortex.cortex.vert(:,2) + b + thegap))) <= thegap)); 
     % get indices of verts with z between (my + b + 2*thegap) and (my + b)
 end
