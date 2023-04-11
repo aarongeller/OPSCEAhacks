@@ -604,11 +604,13 @@ figure(2);
 % set(gcf, 'visible', 'off');
 if strcmp(sliceinfo(n).final_orientation, 'oc')
     fh = fill3(sliceinfo(n).corners(3,:), sliceinfo(n).corners(2,:), sliceinfo(n).corners(1,:), color,'edgecolor',color,'facealpha',.1,'edgealpha',.5,'linewidth',3);
-    view(180,270); % reset to default view for coronal
 else
     fh = fill3(sliceinfo(n).corners(1,:), sliceinfo(n).corners(2,:), sliceinfo(n).corners(3,:), color,'edgecolor',color,'facealpha',.1,'edgealpha',.5,'linewidth',3);
 end
 fname = [sprintf('%02d', n) '_' label '_surf_' orientation];
 exportgraphics(gcf, [targetdir '/' fname '.png']);
 delete(fh);
+if strcmp(sliceinfo(n).final_orientation, 'oc')
+    view(180,270); % reset to default view for coronal
+end
 figure(1);
