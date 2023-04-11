@@ -1,4 +1,4 @@
-function OPSCEA_struct(pt, dopdf, showlabels)
+function OPSCEA_recon(pt, dopdf, showlabels)
 % Do a limited (structure only) OPSCEA run for SEEG electrodes,
 % exporting coronal and axial views together with a corresponding
 % surface view illustrating the cutplane, then calling
@@ -408,8 +408,13 @@ for i=1:length(planes)
                 sliceinfo(j).depthlabels=depthlabels{j};
                 if S.sliceplane=='c'
                     OPSCEAsurfslice(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1);
+                    if sliceinfo(j).final_orientation=='oc'
+                        figure(2);
+                        view(270,0); % flip surface brain to sagittal 
+                        figure(1);
+                    end
                 elseif S.sliceplane=='a'
-                    OPSCEAsurfslice_axial(pt,'a',em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1);
+                    OPSCEAsurfslice_axial(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1);
                 end
                 cameratoolbar('setmode','')
                 axis off; 
@@ -493,7 +498,7 @@ for i=1:length(planes)
                 for showp=find(pltshowplanes) % now add color-coded slices planes on any subplot(s) where you indicated showplanes=1
                     if ~isempty(showp)
                         subplot(subplotrow(showp),subplotcolumn(showp),subplotnum{showp}); 
-                        fill3(sliceinfo(j).corners(1,:),sliceinfo(j).corners(2,:),sliceinfo(j).corners(3,:),depthcolor{j},'edgecolor',depthcolor{j},'facealpha',.1,'edgealpha',.5,'linewidth',3)
+                        fill3(sliceinfo(j).corners(1,:), sliceinfo(j).corners(2,:), sliceinfo(j).corners(3,:), depthcolor{j},'edgecolor',depthcolor{j},'facealpha',.1,'edgealpha',.5,'linewidth',3);
                         subplot(subplotrow(j),subplotcolumn(j),subplotnum{j}); %switch back to the slice subplot at hand
                     end
                 end
@@ -528,8 +533,7 @@ for i=1:length(planes)
 
                 colormap(gca,S.cm);
                 if dopdf
-                    grab_slice(h, ptpath, ttl, j, depthcolor{j}, ...
-                               S.sliceplane, em, eNID, sliceinfo(j).sagittal);
+                    grab_slice(h, ptpath, ttl, j, depthcolor{j}, S.sliceplane, em, eNID);
                 end
             end
         end
@@ -541,8 +545,7 @@ if dopdf
     system(['python make_slice_pdf.py ' pt]);
 end
 
-function grab_slice(h, ptpath, label, n, color, orientation, em, ...
-                    eNID, sag)
+function grab_slice(h, ptpath, label, n, color, orientation, em, eNID)
 global sliceinfo;
 targetdir = [ptpath 'Imaging/Recon/figs']; 
 if ~exist(targetdir, 'dir')
@@ -574,7 +577,7 @@ camzoom(1/scalefactor);
 hold on;
 if orientation=='c'
     dotsize = round(14 - 6*(1-scalefactor));
-    if sag
+    if sliceinfo(n).sagittal
         yoffset = 3;
     else
         yoffset = 1;
@@ -583,7 +586,7 @@ if orientation=='c'
     plot3(em(eNID,1), em(eNID,2)+yoffset, em(eNID,3), 'k.','markersize',dotsize); % depth electrodes (dots)
 elseif orientation=='a'
     dotsize = round(12 - 8*(1-scalefactor));
-    if sag
+    if sliceinfo(n).sagittal
         plot3(em(eNID,1)-1, em(eNID,2), em(eNID,3), 'k-');
         plot3(em(eNID,1)-1, em(eNID,2), em(eNID,3), 'k.','markersize',dotsize); 
     else
@@ -599,7 +602,12 @@ close(newfig);
 
 figure(2);
 % set(gcf, 'visible', 'off');
-fh = fill3(sliceinfo(n).corners(1,:),sliceinfo(n).corners(2,:),sliceinfo(n).corners(3,:),color,'edgecolor',color,'facealpha',.1,'edgealpha',.5,'linewidth',3);
+if strcmp(sliceinfo(n).final_orientation, 'oc')
+    fh = fill3(sliceinfo(n).corners(3,:), sliceinfo(n).corners(2,:), sliceinfo(n).corners(1,:), color,'edgecolor',color,'facealpha',.1,'edgealpha',.5,'linewidth',3);
+    view(180,270); % reset to default view for coronal
+else
+    fh = fill3(sliceinfo(n).corners(1,:), sliceinfo(n).corners(2,:), sliceinfo(n).corners(3,:), color,'edgecolor',color,'facealpha',.1,'edgealpha',.5,'linewidth',3);
+end
 fname = [sprintf('%02d', n) '_' label '_surf_' orientation];
 exportgraphics(gcf, [targetdir '/' fname '.png']);
 delete(fh);
