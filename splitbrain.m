@@ -61,7 +61,7 @@ if strcmp(orientation, 'c')
         [idx, ~] = sort(find(abs((cortex.cortex.vert(:,2) - (m.*cortex.cortex.vert(:,1) + b + thegap))+2*thegap)<=thegap));
     end
     
-elseif strcmp(orientation, 'a')
+elseif strcmp(orientation, 'a') || strcmp(orientation, 's')
     if (min(cortex.cortex.vert(:,3)) < b) && (b < max(cortex.cortex.vert(:,3)))
         [idx, ~] = sort(find(abs((cortex.cortex.vert(:,3) - (m.*cortex.cortex.vert(:,1) + b - thegap))) <= thegap)); 
         % get indices of verts with z between (mx + b - 2*thegap) and (mx + b)
@@ -70,10 +70,6 @@ elseif strcmp(orientation, 'a')
         display('Weird case in splitbrain.m...');
         [idx, ~] = sort(find(abs((cortex.cortex.vert(:,3)-(m.*cortex.cortex.vert(:,1) + b + thegap))+2*thegap)<=thegap));
     end
-
-elseif strcmp(orientation, 's')
-    [idx, ~] = sort(find(abs((cortex.cortex.vert(:,2) - (m.*cortex.cortex.vert(:,1) + b - thegap))) <= thegap)); 
-    % get indices of verts with y between (mx + b - 2*thegap) and (mx + b)
 
 elseif strcmp(orientation, 'oc')
     [idx, ~] = sort(find(abs((cortex.cortex.vert(:,3) - (m.*cortex.cortex.vert(:,2) + b + thegap))) <= thegap)); 
@@ -127,7 +123,8 @@ elseif strcmp(orientation, 's') && centroid(1) > (centroid(2) - b)/m
     % (we're looking to the right)
     status = 1;
 elseif strcmp(orientation, 'oc') && centroid(2) < (centroid(3) - b)/m
-    % for oblique coronal cut we want the part to the right of the
-    % plane when viewed from the side (i.e. the posterior part)
+    % for oblique coronal cut we want the part to the left of the
+    % plane when viewed from the side (i.e. the posterior part);
+    % note sign flipped from conventional sagittal view
     status = 1;
 end
