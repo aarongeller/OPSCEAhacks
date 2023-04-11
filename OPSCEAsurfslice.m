@@ -68,11 +68,12 @@ if isfirstframe
     end % get the 2nd-the-last from each side (unless 6 or less contacts), helps in case offset or bent shaft
     m = (elecs(e1,2) - elecs(e2,2))/(elecs(e1,1) - elecs(e2,1));              
     b = elecs(e1,2) - m*elecs(e1,1); %algebra: b = y-mx
-    intrcpt = b + 128;
     centered_elecs = elecs - [0 b 0];
-    [thetas, rhos, zs] = cart2pol(centered_elecs(:,1), centered_elecs(:,2), centered_elecs(:,3));
+
+    [thetas, rhos] = cart2pol(centered_elecs(:,1), centered_elecs(:,2));
     xytheta = circ_mean(thetas(e1:e2));
     m = tan(xytheta);
+
     xslice = cos(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,1) + 128.5;
     yslice = sin(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,2) + 128.5;
     zslice = meshgrid(1:256)';
@@ -82,22 +83,20 @@ if isfirstframe
     YY = sin(xytheta).*meshgrid(-128:128) + elecs(e1,2); %get coordinates in space
     ZZ = meshgrid(-128:128)'; % coordinates for spatial calculations and plotting
 
-    % sliceinfo(j).viewangle(1:3)=[-YY(1,end) 128 0]; is this used?
-
     xytheta = xytheta + [pi*loaf.isLdepth(j)]; 
     if (m)>10
         xytheta = xytheta + [pi*loaf.isRdepth(j)]; 
     end        
 
+    sliceinfo(j).final_orientation = orientation;
     maxgrad = get_max_gradient(elecs);
     if maxgrad==3
         sliceinfo(j).sagittal = 1; 
-        orientation = 'oc'; % oblique coronal
+        sliceinfo(j).final_orientation = 'oc'; % oblique coronal
         
         % redefine slice by the angle in sagittal plane
         m = (elecs(e1,3) - elecs(e2,3))/(elecs(e1,2) - elecs(e2,2));              
         b = elecs(e1,3) - m*elecs(e1,2); %algebra: b = z-my
-        intrcpt = b + 128;
         centered_elecs = elecs - [0 0 b];
 
         [thetas, rhos] = cart2pol(centered_elecs(:,2), centered_elecs(:,3));
@@ -118,7 +117,6 @@ if isfirstframe
         sliceinfo(j).sagittal = 0; % even if it's oblique we want this set to false
     end
 
-
     sliceinfo(j).azel=[circ_rad2ang(xytheta-pi) + 20*(-1*loaf.isRdepth(j) + 1*loaf.isLdepth(j)),0]; % head-on angle minues 20 degrees for each slice to add perspective
     sliceinfo(j).XX = XX; 
     sliceinfo(j).YY = YY; 
@@ -127,11 +125,10 @@ if isfirstframe
     sliceinfo(j).yslice = yslice; 
     sliceinfo(j).zslice = zslice;
     sliceinfo(j).sl = m; 
-    sliceinfo(j).slicenum = intrcpt; 
     %create surface meshes that are split along the slice plane and plot
     %only one segment so that the sliceplane is still visible
-    sliceinfo(j).lsplit = splitbrain(loaf.lpial, orientation, b, m);
-    sliceinfo(j).rsplit = splitbrain(loaf.rpial, orientation, b, m);
+    sliceinfo(j).lsplit = splitbrain(loaf.lpial, sliceinfo(j).final_orientation, b, m);
+    sliceinfo(j).rsplit = splitbrain(loaf.rpial, sliceinfo(j).final_orientation, b, m);
 end
 hold on;
 if ~any(weights(:))
@@ -165,7 +162,7 @@ AA = padarray(a.CData, [1 1],0, 'post');
 AAnonan=AA; AAnonan(isnan(AA))=0; 
 SE = strel('disk',2);
 alphamap = bwareaopen(imopen(AAnonan,SE),50);
-[xedge, yedge, zedge] = getEdges(alphamap, sliceinfo(j).XX, sliceinfo(j).YY, sliceinfo(j).ZZ, orientation);
+[xedge, yedge, zedge] = getEdges(alphamap, sliceinfo(j).XX, sliceinfo(j).YY, sliceinfo(j).ZZ, sliceinfo(j).final_orientation);
 sliceinfo(j).corners=[xedge fliplr(xedge);  yedge fliplr(yedge);  zedge([1 1 2 2])];   %for oblique slice planes
 %create surface in coordinate space that slices brain in the
 %appropriate plane and apply color and transparency data
