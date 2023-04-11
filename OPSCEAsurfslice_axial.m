@@ -102,6 +102,7 @@ if isfirstframe
     %only one segment so that the sliceplane is still visible
     sliceinfo(j).lsplit = splitbrain(loaf.lpial, orientation, b, m);
     sliceinfo(j).rsplit = splitbrain(loaf.rpial, orientation, b, m);
+    sliceinfo(j).final_orientation = orientation;
 end
 hold on;
 if ~any(weights(:))
