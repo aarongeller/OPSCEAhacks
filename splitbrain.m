@@ -57,8 +57,7 @@ if strcmp(orientation, 'c')
         [idx, ~] = sort(find(abs((cortex.cortex.vert(:,2) - (m.*cortex.cortex.vert(:,1) + b + thegap))) <= thegap)); 
         % get indices of verts with y between (mx + b) and (mx + b + 2*thegap)
     else 
-        % This means intercept lies outside A-P extent of the mesh
-        display('Weird case in splitbrain.m...');
+        display('splitbrain.m: intercept lies outside A-P extent of the mesh.');
         [idx, ~] = sort(find(abs((cortex.cortex.vert(:,2) - (m.*cortex.cortex.vert(:,1) + b + thegap))+2*thegap)<=thegap));
     end
     
@@ -68,8 +67,7 @@ elseif strcmp(orientation, 'a') || strcmp(orientation, 's')
         [idx, ~] = sort(find(abs((cortex.cortex.vert(:,3) - (m.*cortex.cortex.vert(:,1) + b - thegap))) <= thegap)); 
         % get indices of verts with z between (mx + b - 2*thegap) and (mx + b)
     else 
-        % This means intercept lies outside S-I extent of the mesh
-        display('Weird case in splitbrain.m...');
+        display('splitbrain.m: intercept lies outside S-I extent of the mesh.');
         [idx, ~] = sort(find(abs((cortex.cortex.vert(:,3)-(m.*cortex.cortex.vert(:,1) + b + thegap))+2*thegap)<=thegap));
     end
 
