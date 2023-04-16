@@ -408,7 +408,7 @@ for i=1:length(planes)
                 sliceinfo(j).depthlabels=depthlabels{j};
                 if S.sliceplane=='c'
                     OPSCEAsurfslice(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1);
-                    if sliceinfo(j).final_orientation=='oc'
+                    if strcmp(sliceinfo(j).final_orientation, 'oc')
                         figure(2);
                         view(270,0); % flip surface brain to sagittal 
                         figure(1);
