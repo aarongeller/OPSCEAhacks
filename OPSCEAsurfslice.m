@@ -163,7 +163,14 @@ AAnonan=AA; AAnonan(isnan(AA))=0;
 SE = strel('disk',2);
 alphamap = bwareaopen(imopen(AAnonan,SE),50);
 [xedge, yedge, zedge] = getEdges(alphamap, sliceinfo(j).XX, sliceinfo(j).YY, sliceinfo(j).ZZ, sliceinfo(j).final_orientation);
-sliceinfo(j).corners=[xedge fliplr(xedge);  yedge fliplr(yedge);  zedge([1 1 2 2])];   %for oblique slice planes
+if strcmp(sliceinfo(j).final_orientation, 'oc')
+    sliceinfo(j).corners=[xedge([1 1 2 2]); yedge fliplr(yedge); zedge fliplr(zedge)];
+else
+    % AG 4/14/23: not sure why this works for both coronal and axial views,
+    % but ok
+    sliceinfo(j).corners=[xedge fliplr(xedge); yedge fliplr(yedge); zedge([1 1 2 2])];
+end
+
 %create surface in coordinate space that slices brain in the
 %appropriate plane and apply color and transparency data
 surface(sliceinfo(j).XX,sliceinfo(j).YY,sliceinfo(j).ZZ,'CData',sliceimage,'EdgeColor','none','FaceColor','texturemap','FaceAlpha','texturemap','EdgeAlpha',0,'AlphaData',alphamap,'specularexponent',5);

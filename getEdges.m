@@ -1,4 +1,4 @@
-function [xedge, yedge, zedge] = getEdges(alphamap, XX, YY, ZZ, orientation)
+function [xedge, yedge, zedge] = getEdges(alphamap, XX, YY, ZZ, orientation, theta)
 %find the first row that has a nonzero
 %
 % Omni-planar and surface casting of epileptiform activity (OPSCEA)
@@ -8,10 +8,18 @@ function [xedge, yedge, zedge] = getEdges(alphamap, XX, YY, ZZ, orientation)
 if ~exist('orientation', 'var')
     orientation = 'c';
 end
- 
-if strcmp(orientation, 'oc')
-    alphamap = imrotate(alphamap, 270);
+
+if ~exist('theta', 'var')
+    theta = 0;
 end
+
+% if strcmp(orientation, 'oc')
+%     if theta>=0
+%         alphamap = imrotate(alphamap, -90);
+%     else
+%         alphamap = imrotate(alphamap, -270);
+%     end
+% end
 
 i=1;
 allblack = 1;
@@ -77,7 +85,7 @@ elseif strcmp(orientation, 'a')
     yedge = ([YY(lastrow, firstcol) YY(firstrow, firstcol)]);
     zedge = ([ZZ(firstrow, firstcol) ZZ(firstrow, lastcol)]);    
 elseif strcmp(orientation, 'oc')
-    xedge = ([ZZ(firstrow, firstcol) ZZ(firstrow, lastcol)]);
-    yedge = ([YY(firstrow, firstcol) YY(firstrow, lastcol)]);
-    zedge = ([XX(lastrow, firstcol) XX(firstrow, firstcol)]);    
+    xedge = ([XX(lastrow, firstcol) XX(firstrow, firstcol)]); % like Z
+    yedge = ([YY(firstrow, firstcol) YY(firstrow, lastcol)]); % like X
+    zedge = ([ZZ(firstrow, firstcol) ZZ(firstrow, lastcol)]); % like Y
 end
