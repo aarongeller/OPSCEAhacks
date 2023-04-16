@@ -166,7 +166,7 @@ alphamap = bwareaopen(imopen(AAnonan,SE),50);
 if strcmp(sliceinfo(j).final_orientation, 'oc')
     sliceinfo(j).corners=[xedge([1 1 2 2]); yedge fliplr(yedge); zedge fliplr(zedge)];
 else
-    % AG 4/14/23: not sure why this works for both coronal and axial views,
+    % AG 4/15/23: not sure why this works for both coronal and axial views,
     % but ok
     sliceinfo(j).corners=[xedge fliplr(xedge); yedge fliplr(yedge); zedge([1 1 2 2])];
 end
