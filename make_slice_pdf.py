@@ -49,7 +49,7 @@ for f in imgfiles:
     coronal_nonsurf = os.path.join(os.path.dirname(f), fparts[0] + "_" + fparts[1] + "_c.png")
     elecname = fparts[1]
     labelfile = os.path.join(opscea_labeldir, elecname + "_labels")
-    texlines = "\\section{" + elecname + "}\n\\subsection{" + elecname + " Axial View}\n\\includegraphics[width=" + str(surfsize_a) + "\\textwidth]{" + axial_surf + "}\\\\\n\\includegraphics[width=" + str(slicesize_a) + "\\textwidth]{" + axial_nonsurf + "}\n\n\\subsection{" + elecname + " Coronal View}\n\\includegraphics[width=" + str(surfsize_c) + "\\textwidth]{" + coronal_surf + "}\\\\\n\\includegraphics[width=" + str(slicesize_c) + "\\textwidth]{" + coronal_nonsurf + "}\n\n\\subsection{" + elecname + " Freesurfer Labels}\n\\begin{tabular}{ll}\n\\input{" + labelfile + "}\n\\end{tabular}\n\\clearpage\n\n"
+    texlines = "\\section{" + elecname + "}\n\\subsection{" + elecname + " Axial View}\n\\includegraphics[width=" + str(surfsize_a) + "\\textwidth]{" + axial_surf + "}\\\\\n\\includegraphics[width=" + str(slicesize_a) + "\\textwidth]{" + axial_nonsurf + "}\n\n\\subsection{" + elecname + " Coronal View}\n\\includegraphics[width=" + str(surfsize_c) + "\\textwidth]{" + coronal_surf + "}\\\\\n\\includegraphics[width=" + str(slicesize_c) + "\\textwidth]{" + coronal_nonsurf + "}\n\n\\subsection{" + elecname + " FreeSurfer Labels}\n\\begin{tabular}{ll}\n\\input{" + labelfile + "}\n\\end{tabular}\n\\clearpage\n\n"
     texf.write(texlines)
 
 postamble = "\\end{document}\n"
