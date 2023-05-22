@@ -309,7 +309,7 @@ class BrainstormOpsceaMaker(OpsceaMaker):
         scipy.io.savemat(output_path1, {'eleclabels': self.make_cell_array(self.contiguous_labels), 'elecmatrix': elecmatrix})
 
         if self.do_label:
-            print("====> Getting Freesurfer labels...")
+            print("====> Getting FreeSurfer labels...")
             self.fslabels = self.patient.label_elecs(elecfile_prefix = "elecs_all", all_depth = True, quietmode = True)
 
         print("====> Extreme contacts:")

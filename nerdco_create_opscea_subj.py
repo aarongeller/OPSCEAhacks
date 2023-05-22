@@ -30,7 +30,7 @@ class NerdcoOpsceaMaker(OpsceaMaker):
             os.makedirs(os.path.join(self.freesurfer_subjdir, "elecs"))
         output_path1 = os.path.join(self.freesurfer_subjdir, "elecs", "elecs_all.mat")
         if self.do_label:
-            print("====> Getting Freesurfer labels...")
+            print("====> Getting FreeSurfer labels...")
             self.fslabels = self.patient.label_elecs(elecfile_prefix = "elecs_all", all_depth = True, quietmode = True)
             # self.process_labels()
         scipy.io.savemat(output_path1, {'eleclabels': self.make_cell_array(self.contiguous_labels), 'elecmatrix': elecmatrix})
