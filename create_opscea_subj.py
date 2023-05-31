@@ -79,8 +79,8 @@ class OpsceaMaker(ABC):
         fs_mesh_dir = os.path.join(self.freesurfer_subjdir, 'Meshes')
         fs_surf_dir = os.path.join(self.freesurfer_subjdir, 'surf')
     
-        from img_pipe import img_pipe # wait to import until after environment variables are set
-        self.patient = img_pipe.freeCoG(subj = self.subjname, hem = self.hem)
+        from AG_img_pipe import freeCoG # wait to import until after environment variables are set
+        self.patient = freeCoG(subj = self.subjname, hem = self.hem)
         self.patient.convert_fsmesh2mlab()
         if self.do_subcort:
             self.patient.get_subcort()
