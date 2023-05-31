@@ -11,6 +11,16 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
 1. Simplified interface for OPSCEAparams.xls, that eliminates the need to specify the extreme contacts and desired color code for each electrode.
 2. Movie filename includes seizure time (taken from seizure .mat name) and fps, and if an existing movie with the designated name already exists, a new name will be used to prevent automatic over-writing.
 
+## Dependencies
+* [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/)
+* [MATLAB](https://www.mathworks.com/products/matlab.html)
+* [OPSCEA](https://github.com/Kleen-Lab/OPSCEA)
+* [Python](https://www.python.org/)
+ * [NiBabel](https://nipy.org/nibabel/)
+ * [MNE](https://mne.tools/stable/index.html)
+* [LaTeX](https://www.python.org/)
+* [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction)
+
 ## Workflow
 1. Run freesurfer.
 2. In Brainstorm,
