@@ -15,9 +15,7 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
 * [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/)
 * [MATLAB](https://www.mathworks.com/products/matlab.html)
 * [OPSCEA](https://github.com/Kleen-Lab/OPSCEA)
-* [Python](https://www.python.org/)
- * [NiBabel](https://nipy.org/nibabel/)
- * [MNE](https://mne.tools/stable/index.html)
+* [Python](https://www.python.org/) (with [NiBabel](https://nipy.org/nibabel/) and [MNE](https://mne.tools/stable/index.html))
 * [LaTeX](https://www.python.org/)
 * [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction)
 
