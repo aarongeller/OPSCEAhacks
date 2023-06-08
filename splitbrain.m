@@ -88,11 +88,13 @@ else
     FVout = splitFV(mesh.tri,mesh.vert);
     fv.vert = FVout(1).vertices;
     fv.tri = FVout(1).faces;
-    
+
     if ~orientation_good(fv.vert, m, b, orientation)
-        display('splitFV chose wrong submiesh, using submesh #2...');
-        fv.vert = FVout(2).vertices;
-        fv.tri = FVout(2).faces;
+        sv = checkFV(FVout);
+        maxmesh = find(sv==max(sv(2:end)));
+        display(['splitFV chose wrong submiesh, using submesh #' int2str(maxmesh) '...']);
+        fv.vert = FVout(maxmesh).vertices;
+        fv.tri = FVout(maxmesh).faces;
     end
 
     split = fv;
@@ -132,4 +134,10 @@ elseif strcmp(orientation, 'oc') && centroid(2) < (centroid(3) - b)/m
     % plane when viewed from the side (i.e. the posterior part);
     % note sign flipped from conventional sagittal view
     status = 1;
+end
+
+function sizevec=checkFV(fvout)
+sizevec = [];
+for i=1:length(fvout)
+    sizevec(end+1) = size(fvout(i).vertices,1);
 end
