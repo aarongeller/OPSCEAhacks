@@ -58,19 +58,8 @@ alphamask = ones(size(loaf.apasrf)); % *note: consider making alpha mask also cl
 alphamask(loaf.apasrf == 15|loaf.apasrf == 46|loaf.apasrf ==7|loaf.apasrf ==16|loaf.apasrf == 8|loaf.apasrf == 47|loaf.apasrf == 0)=0;
 hold on;
 if isfirstframe
-    % slope: difference of 1st and last electrodes' z coordinates divided by
-    %          difference of their x coordinates (O/A), to get oblique angle
-    if size(elecs,1)>6
-        e1=2; 
-        e2=size(elecs,1)-1; 
-    else 
-        e1=1; 
-        e2=size(elecs,1); 
-    end % get the 2nd-the-last from each side (unless 6 or less contacts), helps in case offset or bent shaft
-    m = (elecs(e1,3) - elecs(e2,3))/(elecs(e1,1) - elecs(e2,1));              
-    b  = elecs(e1,3) - m*elecs(e1,1); %algebra: b = y-mx
-    intrcpt  = b + 128;
-    centered_elecs = elecs - [0 0 b];
+    [m,b,theta,e1] = get_mb(elecs, [1 0 1]); % get line in XZ plane
+    intrcpt = b + 128;
     maxgrad = get_max_gradient(elecs);
     if maxgrad==3
         orientation = 's';
@@ -78,9 +67,6 @@ if isfirstframe
     else
         sliceinfo(j).sagittal = 0;
     end
-    [thetas, rhos] = cart2pol(centered_elecs(:,1), centered_elecs(:,3));
-    theta = circ_mean(thetas(e1:e2));
-    m = tan(theta);
     YY = meshgrid(-128:128)'; % coordinates for spatial calculations and plotting
     yslice = meshgrid(1:256)';
     xslice = cos(theta).*meshgrid(-127.5:127.5) + elecs(e1,1) + 128.5;
