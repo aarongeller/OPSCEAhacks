@@ -13,7 +13,7 @@ function split = splitbrain(cortex, orientation, b, m)
 % c (coronal): defined by a line in the XY plane, angle near n*pi
 %              for n in integers including zero
 % a (axial): defined by a line in the XZ plane
-% s (sagittal): defined by a line in the XY plane, angle near
+% s (sagittal): defined by a line in the XZ plane, angle near
 %               n*pi/2 for n in integers excluding zero
 % oc (oblique coronal): defined by a line in the YZ plane
 %
@@ -90,7 +90,7 @@ else
     fv.tri = FVout(1).faces;
     
     if ~orientation_good(fv.vert, m, b, orientation)
-        display('splitFV set #1 has wrong orientation, choosing set #2...');
+        display('splitFV chose wrong submiesh, using submesh #2...');
         fv.vert = FVout(2).vertices;
         fv.tri = FVout(2).faces;
     end
@@ -112,18 +112,22 @@ status = 0;
 centroid = mean(verts);
 
 if strcmp(orientation, 'c') && centroid(2) < m*centroid(1) + b
+    % line is in XY plane
     % for coronal cut want to choose the part behind the plane (we're
     % looking back) so we want centroid below the line
     status = 1;
 elseif strcmp(orientation, 'a') && centroid(3) > m*centroid(1) + b
+    % line is in XZ plane
     % for axial cut we want to choose the part above the plane
     % (we're looking up) so we want centroid above the line
     status = 1;
-elseif strcmp(orientation, 's') && centroid(1) > (centroid(2) - b)/m
+elseif strcmp(orientation, 's') && centroid(1) > (centroid(3) - b)/m
+    % line is in XZ plane
     % for sagittal cut we want the part to the right of the plane
-    % (we're looking to the right)
+    % (we're looking to the right, which has increasing X)
     status = 1;
 elseif strcmp(orientation, 'oc') && centroid(2) < (centroid(3) - b)/m
+    % line is in YZ plane
     % for oblique coronal cut we want the part to the left of the
     % plane when viewed from the side (i.e. the posterior part);
     % note sign flipped from conventional sagittal view
