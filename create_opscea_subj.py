@@ -13,14 +13,13 @@ from abc import ABC, abstractmethod
 class OpsceaMaker(ABC):
     def __init__(self):
         self.handle_args()
-
         os.environ['SUBJECTS_DIR'] = os.path.join(os.environ['FREESURFER_HOME'], "subjects")
         self.freesurfer_subjdir = os.path.join(os.environ['SUBJECTS_DIR'], self.subjname)
         self.fs_eeg_dir = os.path.join(self.freesurfer_subjdir, 'eeg')
         self.all_eeg_files = glob(os.path.join(self.fs_eeg_dir, '*.edf'))
         self.all_eeg_files.sort()
 
-        path_to_opsceadata = "/Users/aaron/Documents/MATLAB/OPSCEA-main/OPSCEADATA"
+        path_to_opsceadata = os.path.join(os.environ['HOME'], "Documents/MATLAB/OPSCEA-main/OPSCEADATA")
         self.opscea_subjdir = os.path.join(path_to_opsceadata, self.subjname)
 
         # path_to_imgpipe = "/opt/local/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/img_pipe"
@@ -275,7 +274,7 @@ class OpsceaMaker(ABC):
 
 class BrainstormOpsceaMaker(OpsceaMaker):
     def do_imaging_elecs(self):
-        path_to_brainstormdb = "/Users/aaron/Documents/brainstorm_db/IEEG_visualization/"
+        path_to_brainstormdb =  os.path.join(os.environ['HOME'], "Documents/brainstorm_db/IEEG_visualization/")
         brainstorm_channel_data_path = os.path.join(path_to_brainstormdb, "data", self.subjname, "*", "channel.mat") 
         # necessary because importing any edf to brainstorm creates a
         # channel.mat with null coordinates for each electrode, so we
