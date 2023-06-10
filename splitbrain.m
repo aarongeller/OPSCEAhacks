@@ -86,15 +86,18 @@ else
 
     disp('Generating partial mesh for slice view...')
     FVout = splitFV(mesh.tri,mesh.vert);
-    fv.vert = FVout(1).vertices;
-    fv.tri = FVout(1).faces;
+
+    sv = checkFV(FVout);
+    [~,svinds] = sort(sv);
+    maxmeshind = svinds(end);
+    fv.vert = FVout(maxmeshind).vertices;
+    fv.tri = FVout(maxmeshind).faces;
 
     if ~orientation_good(fv.vert, m, b, orientation)
-        sv = checkFV(FVout);
-        maxmesh = find(sv==max(sv(2:end)));
-        display(['splitFV chose wrong submiesh, using submesh #' int2str(maxmesh) '...']);
-        fv.vert = FVout(maxmesh).vertices;
-        fv.tri = FVout(maxmesh).faces;
+        maxmeshind = svinds(end-1); % choose the next biggest submesh
+        display(['splitFV chose wrong submiesh, using submesh #' int2str(maxmeshind) '...']);
+        fv.vert = FVout(maxmeshind).vertices;
+        fv.tri = FVout(maxmeshind).faces;
     end
 
     split = fv;
