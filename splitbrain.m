@@ -95,7 +95,7 @@ else
 
     if ~orientation_good(fv.vert, m, b, orientation)
         maxmeshind = svinds(end-1); % choose the next biggest submesh
-        display(['splitFV chose wrong submiesh, using submesh #' int2str(maxmeshind) '...']);
+        display(['splitFV chose wrong submesh, using submesh #' int2str(maxmeshind) '...']);
         fv.vert = FVout(maxmeshind).vertices;
         fv.tri = FVout(maxmeshind).faces;
     end
