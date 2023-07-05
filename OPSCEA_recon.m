@@ -542,6 +542,8 @@ for i=1:length(planes)
 end
 
 if dopdf
+    close all;
+    export_bs_figs(pt);
     system(['python make_slice_pdf.py ' pt]);
 end
 
