@@ -21,8 +21,7 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
 1. Run freesurfer.
 2. In Brainstorm,
  * Load MRI and co-register CT;
- * Mark electrodes;
- * Export whole-brain figures of recon.
+ * Mark electrodes.
 3. Run `create_opscea_subj.py`
 4. Edit OPSCEAparams.xls
 5. Run `OPSCEA.m` or `OPSCEA_recon.m`.
