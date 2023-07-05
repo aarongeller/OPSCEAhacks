@@ -36,7 +36,7 @@ for f in imgfiles:
         wholebrains.append(f)
 
 if len(wholebrains)==4:
-    texlines = "\\setcounter{section}{-1}\\section{Whole Brain}\n\\begin{tabular}{cc}\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[0] + "} &\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[1] + "}\\\\\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[2] + "} &\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[3] + "}\\\\\n\\end{tabular}\n\\clearpage\n\n"
+    texlines = "\\setcounter{section}{-1}\\section{Whole Brain}\n\\begin{tabular}{cc}\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[1] + "} &\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[0] + "}\\\\\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[2] + "} &\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[3] + "}\\\\\n\\end{tabular}\n\\clearpage\n\n"
     texf.write(texlines)
     
 for f in imgfiles:
