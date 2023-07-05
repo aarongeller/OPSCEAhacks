@@ -18,7 +18,7 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
 * [LaTeX](https://www.python.org/)
 
 ## Workflow
-1. Run freesurfer.
+1. Run FreeSurfer.
 2. In Brainstorm,
  * Load MRI,
  * Co-register CT, and
