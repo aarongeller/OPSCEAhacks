@@ -15,10 +15,9 @@ gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
 
 views = {'left', 'bottom', 'right', 'front'};
 output_prefix = 'SEEG_3D_';
-movoptions.Duration = 10;
-movoptions.FrameRate = 15;
+movoptions.Duration = 10; % sec
+movoptions.FrameRate = 15; % fps
 movoptions.Quality = 75;
-movoptions.SuppressDialog = 1;
 
 for i=1:length(views)
     figure_3d('SetStandardView', hFig, views{i});
