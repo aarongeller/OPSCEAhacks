@@ -543,7 +543,7 @@ end
 
 if dopdf
     close all;
-    export_bs_figs(pt);
+    export_bs_figs(pt, channel_mat, fs_dir);
     system(['python make_slice_pdf.py ' pt]);
 end
 

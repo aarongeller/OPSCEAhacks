@@ -1,17 +1,15 @@
-function export_bs_figs(subj)
+function export_bs_figs(subj, channel_mat, fs_dir)
 
 % export figures from Brainstorm showing all electrodes, viewed
 % from left, right, front and bottom, and export movies showing
 % brain rotating around the Z axis and Y axis.
 
-fs_output_path = ['/Applications/freesurfer/subjects/' subj '/ct'];
-protocolname = 'IEEG_visualization';
-bs_subj_path = ['/Users/aaron/Documents/brainstorm_db/' protocolname '/data/' subj];
-chfiles = dir([bs_subj_path '/@raw*']);
-FileName = [subj '/' chfiles(1).name '/channel.mat'];
+fs_output_path = [fs_dir '/ct'];
+ch_mat_parts = split(channel_mat, '/');
+protocolname = ch_mat_parts{end-4};
 
 gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
-[hFig, iDS, iFig] = view_channels_3d({FileName}, 'SEEG', 'cortex', 1, 0);
+[hFig, iDS, iFig] = view_channels_3d({channel_mat}, 'SEEG', 'cortex', 1, 0);
 
 views = {'left', 'bottom', 'right', 'front'};
 output_prefix = 'SEEG_3D_';

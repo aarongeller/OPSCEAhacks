@@ -232,7 +232,9 @@ class OpsceaMaker(ABC):
                           [1,0,0],
                            [0,1,0]])
         colors = allcolors[:len(wirelabels), :]
-        scipy.io.savemat(output_path, {'wirelabels': self.make_cell_array(wirelabels), 'extremecontacts': extremecontacts, 'colors':colors})
+        scipy.io.savemat(output_path, {'channel_mat': self.channel_mat, 'fs_dir': self.freesurfer_subjdir, \
+                                       'wirelabels': self.make_cell_array(wirelabels), 'extremecontacts': extremecontacts, \
+                                       'colors':colors})
 
     def matrix_from_dict_vals(self, d, l=[]):
         if len(l)==0:
@@ -288,6 +290,7 @@ class BrainstormOpsceaMaker(OpsceaMaker):
                 elecmatrix = self.build_elecmatrix(f)
                 if self.is_good_elecmatrix(elecmatrix):
                     print("====> Selected channel.mat: " + f)
+                    self.channel_mat = f
                     found_good_elecmatrix = True
                     break
             except DollarException:
