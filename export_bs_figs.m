@@ -11,7 +11,7 @@ protocolname = ch_mat_parts{end-4};
 gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
 [hFig, iDS, iFig] = view_channels_3d({channel_mat}, 'SEEG', 'cortex', 1, 0);
 
-views = {'left', 'bottom', 'right', 'front'};
+views = {'left', 'right', 'bottom', 'front'};
 output_prefix = 'SEEG_3D_';
 movoptions.Duration = 10; % sec
 movoptions.FrameRate = 15; % fps
