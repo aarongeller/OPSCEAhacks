@@ -543,7 +543,7 @@ end
 
 if dopdf
     close all;
-    export_bs_figs(pt, channel_mat, fs_dir);
+    export_bs_figs(pt, channel_mat, [ptpath 'Imaging/Recon/figs']);
     system(['python make_slice_pdf.py ' pt]);
 end
 
