@@ -1,4 +1,4 @@
-function OPSCEA_recon(pt, dopdf, showlabels)
+function OPSCEA_recon(pt, selected_leads)
 % Do a limited (structure only) OPSCEA run for SEEG electrodes,
 % exporting coronal and axial views together with a corresponding
 % surface view illustrating the cutplane, then calling
@@ -81,6 +81,12 @@ if isempty(prm); error(['ATTENTION: No entry exists for ' pt ' seizure ' sz ' in
 [~,plt]=xlsread([opsceapath 'OPSCEAparams'],pt); 
 fields_PLOT=plt(1,:); plt(1,:)=[]; % header for columns of plotting parameters
 plottype=plt(:,strcmpi(fields_PLOT,'plottype')); %type of plot for each subplot (accepts: iceeg, surface, depth, or colorbar)
+
+if ~exist('selected_leads', 'var')
+    rows_to_do = 1:length(fields_PLOT);
+else
+    rows_to_do = get_matching_labels(plt(:,end), selected_leads);
+end
 
 cd 
 %% prepare subplot specifications
@@ -320,7 +326,7 @@ w8s = [];
 for i=1:length(planes)
     S.sliceplane = planes{i};
     subplot(1,1,1); %clears all axes, to start fresh each frame
-    for j=1:size(plt,1); 
+    for j=rows_to_do
         h = subplot(subplotrow(j),subplotcolumn(j),subplotnum{j}); 
         switch upper(plottype{j,1})
           case 'SURFACE' % plotting surfaces only
@@ -612,3 +618,14 @@ if strcmp(sliceinfo(n).final_orientation, 'oc')
     view(180,270); % reset to default view for coronal
 end
 figure(1);
+
+function ml = get_matching_labels(tablecol, arr)
+ml = 1:3;
+for i=1:length(arr)
+    for j=1:length(tablecol)
+        if strcmp(arr{i}, tablecol{j})
+            ml = [ml j];
+            break;
+        end
+    end
+end
