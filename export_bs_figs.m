@@ -7,6 +7,11 @@ function export_bs_figs(subj, channel_mat, outputdir)
 ch_mat_parts = split(channel_mat, '/');
 protocolname = ch_mat_parts{end-4};
 
+% check if brainstorm is running and if not, start it
+if ~brainstorm('status')
+    brainstorm nogui
+end
+
 gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
 [hFig, iDS, iFig] = view_channels_3d({channel_mat}, 'SEEG', 'cortex', 1, 0);
 
