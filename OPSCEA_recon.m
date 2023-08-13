@@ -83,7 +83,7 @@ fields_PLOT=plt(1,:); plt(1,:)=[]; % header for columns of plotting parameters
 plottype=plt(:,strcmpi(fields_PLOT,'plottype')); %type of plot for each subplot (accepts: iceeg, surface, depth, or colorbar)
 
 if ~exist('selected_leads', 'var')
-    rows_to_do = 1:length(fields_PLOT);
+    rows_to_do = 1:size(plt,1);
 else
     rows_to_do = get_matching_labels(plt(:,end), selected_leads);
 end
