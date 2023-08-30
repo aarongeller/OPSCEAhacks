@@ -19,7 +19,7 @@ views = {'left', 'right', 'bottom', 'front'};
 output_prefix = 'SEEG_3D_';
 movoptions.Duration = 10; % sec
 movoptions.FrameRate = 15; % fps
-movoptions.Quality = 75;
+movoptions.Quality = 100;
 
 for i=1:length(views)
     figure_3d('SetStandardView', hFig, views{i});
