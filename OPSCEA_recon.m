@@ -1,4 +1,4 @@
-function OPSCEA_recon(pt, selected_leads)
+function OPSCEA_recon(pt, selected_leads, force_angle_coronal, force_angle_axial, dopdf)
 % Do a limited (structure only) OPSCEA run for SEEG electrodes,
 % exporting coronal and axial views together with a corresponding
 % surface view illustrating the cutplane, then calling
@@ -38,14 +38,14 @@ function OPSCEA_recon(pt, selected_leads)
 % needs: statistics toolbox, signal processing toolbox, image
 % processing toolbox
 
-if ~exist('dopdf', 'var')
-    dopdf = 1;
-end
-
 if ~exist('showlabels','var')||isempty(showlabels)
     % default displays ICEEG and depth labels
     showlabels=true; 
 end 
+
+if ~exist('dopdf', 'var')
+    dopdf = 1;
+end
 
 sz = '01'; % remove
 
@@ -84,8 +84,45 @@ plottype=plt(:,strcmpi(fields_PLOT,'plottype')); %type of plot for each subplot 
 
 if ~exist('selected_leads', 'var')
     rows_to_do = 1:size(plt,1);
+    force_angle_coronal = nan(1, size(plt,1));
+    force_angle_axial = nan(1, size(plt,1));
 else
     rows_to_do = get_matching_labels(plt(:,end), selected_leads);
+    num_to_do = length(rows_to_do) - 3;
+
+    if exist('force_angle_coronal', 'var')
+        if length(force_angle_coronal)>0
+            if length(force_angle_coronal)~=num_to_do
+                error(['Angle list lengths must match electrode list lengths.  Quitting.']);
+            end
+            nanvec = nan(1, max(rows_to_do));
+            for i=1:num_to_do
+                nanvec(rows_to_do(i+3)) = force_angle_coronal(i);
+            end
+            force_angle_coronal = nanvec;
+        else
+            force_angle_coronal = nan(1, max(rows_to_do));
+        end
+    else
+        force_angle_coronal = nan(1, max(rows_to_do));
+    end
+
+    if exist('force_angle_axial', 'var')
+        if length(force_angle_axial)>0
+            if length(force_angle_axial)~=num_to_do
+                error(['Angle list lengths must match electrode list lengths.  Quitting.']);
+            end
+            nanvec = nan(1, max(rows_to_do));
+            for i=1:num_to_do
+                nanvec(rows_to_do(i+3)) = force_angle_axial(i);
+            end
+            force_angle_axial = nanvec;
+        else
+            force_angle_axial = nan(1, max(rows_to_do));
+        end
+    else
+        force_angle_axial = nan(1, max(rows_to_do));
+    end
 end
 
 cd 
@@ -391,15 +428,13 @@ for i=1:length(planes)
             hold on; 
             colormap(gca,S.cm); 
             set(gca,'Clipping','off');
-            if dopdf
-                % clone the surface plot for use in grab_slice
-                surffig = figure(2); 
-                % set(gcf, 'visible', 'off');
-                newhandle = copyobj(h, surffig);
-                zoom(3.6);
-                newhandle.Position(1:2) = [.28 .45];
-                figure(1);
-            end
+            % clone the surface plot for use in grab_slice
+            surffig = figure(2);
+            % set(gcf, 'visible', 'off');
+            newhandle = copyobj(h, surffig);
+            zoom(3.6);
+            newhandle.Position(1:2) = [.28 .45];
+            figure(1);
             clear srfplot
           case 'DEPTH' %plot depth electrode with parallel slice (plus surface behind it)
             eN=depths{j}; 
@@ -413,14 +448,14 @@ for i=1:length(planes)
                 I.nns=nns; 
                 sliceinfo(j).depthlabels=depthlabels{j};
                 if S.sliceplane=='c'
-                    OPSCEAsurfslice(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1);
+                    OPSCEAsurfslice(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1,force_angle_coronal(j));
                     if strcmp(sliceinfo(j).final_orientation, 'oc')
                         figure(2);
                         view(270,0); % flip surface brain to sagittal 
                         figure(1);
                     end
                 elseif S.sliceplane=='a'
-                    OPSCEAsurfslice_axial(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1);
+                    OPSCEAsurfslice_axial(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1,force_angle_axial(j));
                 end
                 cameratoolbar('setmode','')
                 axis off; 
@@ -538,9 +573,7 @@ for i=1:length(planes)
                      'fontweight', 'bold', 'fontsize', 14);
 
                 colormap(gca,S.cm);
-                if dopdf
-                    grab_slice(h, ptpath, ttl, j, depthcolor{j}, S.sliceplane, em, eNID);
-                end
+                grab_slice(h, ptpath, ttl, j, depthcolor{j}, S.sliceplane, em, eNID);
             end
         end
     end
@@ -549,7 +582,9 @@ end
 
 if dopdf
     close all;
-    export_bs_figs(pt, channel_mat, [ptpath 'Imaging/Recon/figs']);
+    if ~exist('selected_leads', 'var')
+        export_bs_figs(pt, channel_mat, [ptpath 'Imaging/Recon/figs']);
+    end
     system(['python make_slice_pdf.py ' pt]);
 end
 

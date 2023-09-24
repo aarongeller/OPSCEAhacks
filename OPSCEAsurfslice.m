@@ -1,4 +1,4 @@
-function OPSCEAsurfslice(subject,orientation,elecs,weights,subj_dir,fs_dir,cax,CM,gsp,j,isfirstframe)
+function OPSCEAsurfslice(subject,orientation,elecs,weights,subj_dir,fs_dir,cax,CM,gsp,j,isfirstframe,force_angle)
 %     (This is a subfunction created as a part of) Omni-planar and surface
 %     casting of epileptiform activity (OPSCEA) (UC Case Number SF2020-281)
 %     jointly created by Dr. Jon Kleen, Ben Speidel, Dr. Robert Knowlton,
@@ -57,7 +57,7 @@ alphamask = ones(size(loaf.apasrf)); % *note: consider making alpha mask also cl
 alphamask(loaf.apasrf == 15|loaf.apasrf == 46|loaf.apasrf ==7|loaf.apasrf ==16|loaf.apasrf == 8|loaf.apasrf == 47|loaf.apasrf == 0)=0;
 hold on;
 if isfirstframe
-    [m,b,xytheta,e1] = get_mb(elecs, [1 1 0]); % get line in XY plane
+    [m,b,xytheta,e1] = get_mb(elecs, [1 1 0], force_angle); % get line in XY plane
 
     xslice = cos(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,1) + 128.5;
     yslice = sin(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,2) + 128.5;
@@ -76,7 +76,7 @@ if isfirstframe
     sliceinfo(j).final_orientation = orientation;
     maxgrad = get_max_gradient(elecs);
     if maxgrad==3
-        [m,b,yztheta,e1] = get_mb(elecs, [0 1 1]); % get line in YZ plane
+        [m,b,yztheta,e1] = get_mb(elecs, [0 1 1], force_angle); % get line in YZ plane
         sliceinfo(j).sagittal = 1; 
         sliceinfo(j).final_orientation = 'oc'; % oblique coronal
         

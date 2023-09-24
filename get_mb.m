@@ -1,4 +1,4 @@
-function [m,b,theta,e1]=get_mb(elecs, dimvec)
+function [m,b,theta,e1]=get_mb(elecs, dimvec, force_angle)
 if size(elecs,1)>6
     e1=2; 
     e2=size(elecs,1)-1; 
@@ -16,4 +16,28 @@ centeringvec(dim2) = b;
 centered_elecs = elecs - centeringvec;
 [thetas, rhos] = cart2pol(centered_elecs(:,dim1), centered_elecs(:,dim2));
 theta = circ_mean(thetas(e1:e2));
+if ~isnan(force_angle)
+    % convert to radians
+    force_angle = deg2rad(force_angle);
+    % reflect around ordinate since we're using radiologic convention 
+    if force_angle>0
+        force_angle = pi - force_angle;
+    elseif force_angle<0
+        force_angle = -pi - (abs(force_angle));
+    end
+    if sign(theta)~=sign(force_angle)
+        % handle brain flipping
+        anglediff = force_angle - theta;
+        if anglediff>0
+            if pi-anglediff < 0.1
+                force_angle = force_angle - pi;
+            end
+        else
+            if pi-abs(anglediff) < 0.1
+                force_angle = force_angle + pi;
+            end
+        end
+    end
+    theta = force_angle;
+end
 m = tan(theta);
