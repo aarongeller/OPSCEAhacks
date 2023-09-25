@@ -4,14 +4,17 @@ function OPSCEA_recon(pt, selected_leads, force_angle_coronal, force_angle_axial
 % surface view illustrating the cutplane, then calling
 % make_slice_pdf.py to collect them in a pdf.
 %
-% EXAMPLE USAGE: OPSCEA_struct(pt, dopdf, showlabels)
+% EXAMPLE USAGE: OPSCEA_recon(pt, selected_leads, force_angle_coronal, force_angle_axial, dopdf)
 % 
 % pt is a string such as 'UCSF4' or 'JaneDoe', acts as a prefix for files below
-% dopdf is 1 (default) or 0
-% showlabels is:
-%      1 if you want to show the channel labels (default)
-%      0 to hide them AND randomize channels (blinding the reader to the
-%      electrode locations of the trace-based ICEEG as in Kleen et al. 2021)
+%
+% optional parameters:
+% selected_leads: e.g. {'LAH', 'RAM'}
+% force_angle_coronal: e.g. [13, 27]; if length is nonzero it must
+%                      match length of selected_leads
+% force_angle_axial: e.g. [13, 27]; if length is nonzero it must
+%                      match length of selected_leads
+% dopdf: e.g. 0 (default is 1)
 
 %     Omni-planar and surface casting of epileptiform activity (OPSCEA) (UC
 %     Case Number SF2020-281) jointly created by Dr. Jon Kleen, Ben
