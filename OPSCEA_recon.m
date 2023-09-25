@@ -501,11 +501,14 @@ for i=1:length(planes)
                     end
                     
                     if sliceinfo(j).sagittal
-                        camorbit(abs(ang), 0, 'coordsys', [0 1 0]);
+                        if sliceinfo(j).viewangle < 90
+                            ang = ang + 180;
+                        end
+                        camorbit(ang, 0, 'coordsys', [0 1 0]);
                         camroll(90);
                     else
                         camorbit(ang, 0, 'coordsys', [0 1 0]);
-                    end                    
+                    end
                     
                     if sliceinfo(j).sagittal
                         ang1 = 45;
