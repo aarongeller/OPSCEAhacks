@@ -77,6 +77,9 @@ elseif strcmp(orientation, 'oc')
     % get indices of verts with z between (my + b + 2*thegap) and (my + b)
 end
 
+split.vert = [];
+split.tri = [];
+
 if isempty(idx)
     split.vert = cortex.cortex.vert;
     split.tri = cortex.cortex.tri;
@@ -89,18 +92,22 @@ else
 
     sv = checkFV(FVout);
     [~,svinds] = sort(sv);
-    maxmeshind = svinds(end);
-    fv.vert = FVout(maxmeshind).vertices;
-    fv.tri = FVout(maxmeshind).faces;
-
-    if ~orientation_good(fv.vert, m, b, orientation)
-        maxmeshind = svinds(end-1); % choose the next biggest submesh
-        display(['splitFV chose wrong submesh, using submesh #' int2str(maxmeshind) '...']);
+    foundgood = 0;
+    for i=length(svinds):-1:1
+        maxmeshind = svinds(i);
         fv.vert = FVout(maxmeshind).vertices;
         fv.tri = FVout(maxmeshind).faces;
+
+        if orientation_good(fv.vert, m, b, orientation)
+            foundgood = 1;
+            break;
+        end
+        display(['splitFV chose wrong submesh, trying submesh #' int2str(svinds(i-1)) '...']);
     end
 
-    split = fv;
+    if foundgood
+        split = fv;
+    end
 end
 
 function tri = delete_verts(tri, idx)
