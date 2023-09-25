@@ -93,8 +93,14 @@ end
 hold on;
 if ~any(weights(:))
     % doing structural plot without heatmap
-    lbrn=ctmr_gauss_plot_edited(sliceinfo(j).lsplit,[],[],S.cax,0,S.cm,S.gsp); 
-    rbrn=ctmr_gauss_plot_edited(sliceinfo(j).rsplit,[],[],S.cax,0,S.cm,S.gsp); 
+    if ~isempty(sliceinfo(j).lsplit.vert)
+        % can happen for sagittal cuts that exclude one hemisphere
+        lbrn=ctmr_gauss_plot_edited(sliceinfo(j).lsplit,[],[],S.cax,0,S.cm,S.gsp);
+    end
+    if ~isempty(sliceinfo(j).rsplit.vert)
+        % can happen for sagittal cuts that exclude one hemisphere
+        rbrn=ctmr_gauss_plot_edited(sliceinfo(j).rsplit,[],[],S.cax,0,S.cm,S.gsp);
+    end
 else
     lbrn=ctmr_gauss_plot_edited(sliceinfo(j).lsplit,I.em(I.nns,:),I.w8s(I.nns),S.cax,0,S.cm,S.gsp); 
     rbrn=ctmr_gauss_plot_edited(sliceinfo(j).rsplit,I.em(I.nns,:),I.w8s(I.nns),S.cax,0,S.cm,S.gsp); 
