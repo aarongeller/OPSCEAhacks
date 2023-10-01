@@ -294,14 +294,14 @@ class freeCoG:
                         for item in subcort_vert]  # seperate strings
 
         # Convert into an array of floats
-        subcort_vert = np.array(np.vstack((subcort_vert)), dtype=np.float)
+        subcort_vert = np.array(np.vstack((subcort_vert)), dtype=float)
 
         # get rows for triangles only, strip 0 column, and split into seperate
         # strings
         subcort_tri = [item[:-2] for item in subcort_mat[subcort_inds[0] + 1:]]
         subcort_tri = [item.split(' ')
                        for item in subcort_tri]  # seperate strings
-        subcort_tri = np.array(np.vstack((subcort_tri)), dtype=np.int)
+        subcort_tri = np.array(np.vstack((subcort_tri)), dtype=int)
 
         outfile = '%s_subcort_trivert.mat' % (nuc)
         scipy.io.savemat(outfile, {'tri': subcort_tri, 'vert': subcort_vert})  # save tri/vert matrix
@@ -430,11 +430,11 @@ class freeCoG:
             indices_to_use = list(set(range(len(long_label))) - set(indices))
 
             # Initialize the cell array that we'll store electrode labels in later
-            elec_labels_orig = np.empty((len(long_label),4),dtype=np.object)
+            elec_labels_orig = np.empty((len(long_label),4),dtype=object)
             elec_labels_orig[:,0] = short_label
             elec_labels_orig[:,1] = long_label
             elec_labels_orig[:,2] = grid_or_depth 
-            elec_labels = np.empty((len(indices_to_use),4), dtype = np.object)
+            elec_labels = np.empty((len(indices_to_use),4), dtype = object)
             elecmatrix_orig = elecmatrix
             elecmatrix = elecmatrix[indices_to_use,:]
             
@@ -517,7 +517,7 @@ class freeCoG:
 
             aseg_file = os.path.join(self.subj_dir, self.subj, 'mri', 'aparc%s+aseg.mgz'%(depth_atlas_nm))
             dat = nib.freesurfer.load(aseg_file)
-            aparc_dat = dat.get_data()
+            aparc_dat = dat.get_fdata() #UPDATED DEPRECATED CALL was dat.get_data() now dat.get_fdata()
              
             # Define the affine transform to go from surface coordinates to volume coordinates (as CRS, which is
             # the slice *number* as x,y,z in the 3D volume. That is, if there are 256 x 256 x 256 voxels, the
@@ -550,11 +550,11 @@ class freeCoG:
             for row in LUT:
                 if len(row)>1 and row[0][0]!='#' and row[0][0]!='\\': # Get rid of the comments
                     lname = row[1]
-                    lab[np.int(row[0])] = lname
+                    lab[int(row[0])] = lname
 
             # Label the electrodes according to the aseg volume
             nchans = VoxCRS.shape[0]
-            anatomy = np.empty((nchans,), dtype=np.object)
+            anatomy = np.empty((nchans,), dtype=object)
             print("Labeling electrodes...")
 
             for elec in np.arange(nchans):
