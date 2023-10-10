@@ -440,7 +440,7 @@ class BrainstormOpsceaMaker(OpsceaMaker):
                 raise DollarException("Channel listing contains invalid name: " + c + ".  Please correct channel file in Brainstorm.")
     
     def is_good_elecmatrix(self, elecmatrix):
-        min_size = 1
+        min_size = 0.1
         return np.linalg.norm(np.sum(abs(elecmatrix), axis=0)) >= min_size
 
     def do_imaging_recon_figs(self):
