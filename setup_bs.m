@@ -20,7 +20,7 @@ end
 ctdir = fullfile(fssubjdir, 'ct');
 ctfile = dir(fullfile(ctdir, '*.nii.gz'));
 eegdir = fullfile(fssubjdir, 'eeg');
-eegfiles = dir(fullfile(eegdir, '*.edf')); % assumes only 1
+eegfiles = dir(fullfile(eegdir, '*.edf'));
 
 protocolname = 'IEEG_Visualization';
 gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
