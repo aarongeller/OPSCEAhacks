@@ -1,6 +1,6 @@
 function setup_bs(subj)
 
-% prepare subject in brainstorm: load MRI, coregister CT, load EEG
+% prepare subject in brainstorm: anonymyze EDF, load MRI, coregister CT, load EEG
 % and edit channel file
 
 % check if brainstorm is running and if not, start it
@@ -11,10 +11,14 @@ end
 fsdir = '/Applications/freesurfer/subjects';
 
 if ~exist('subj', 'var')
+    % debug mode
     subj = 'notUCHZG';
     fssubjdir = fullfile(fsdir, 'UCHZG');
 else
     fssubjdir = fullfile(fsdir, subj);
+    % anonymize EDF file
+    cd eegdir;
+    clean_edf_data(subj);
 end
 
 ctdir = fullfile(fssubjdir, 'ct');
@@ -24,10 +28,6 @@ eegfiles = dir(fullfile(eegdir, '*.edf'));
 
 protocolname = 'IEEG_Visualization';
 gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
-
-% % anonymize EDF file
-% cd eegdir;
-% clean_edf_data(subj);
 
 % Create subject
 [~, iSubject] = db_add_subject(subj, [], 0, 0);
