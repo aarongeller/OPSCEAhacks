@@ -61,9 +61,8 @@ for k=1:length(eegfiles)
     % Get channel file
     [sStudy, iStudy] = bst_get('ChannelFile', sFileRaw.ChannelFile);
     ChannelMat = in_bst_channel(sFileRaw.ChannelFile);
-    misc_channels = {'EKG1', 'Annotations', 'SpO2', 'EtCO2', 'Pulse', ...
-                     'CO2Wave'};
-    misc_present_str = '';
+    misc_channels = {'EKG1', 'Annotations', 'SpO2', 'EtCO2', 'Pulse', 'CO2Wave'};
+    set_to_misc_str = '';
     isfirst = 1;
     for i=1:length(ChannelMat.Channel)
         for j=1:length(misc_channels)
@@ -71,9 +70,9 @@ for k=1:length(eegfiles)
                 if isfirst
                     isfirst = 0;
                 else
-                    misc_present_str = [misc_present_str ', '];
+                    set_to_misc_str = [set_to_misc_str ', '];
                 end
-                misc_present_str = [misc_present_str ChannelMat.Channel(i).Name];
+                set_to_misc_str = [set_to_misc_str ChannelMat.Channel(i).Name];
                 break;
             end
         end
@@ -81,8 +80,6 @@ for k=1:length(eegfiles)
 
     % 3) find channels starting with $, rename them and set to MISC
 
-    dollar_chan_str = '';
-    isfirst = 1;
     for i=1:length(ChannelMat.Channel)
         if strcmp(ChannelMat.Channel(i).Name(1), "$")
             newname = ['XXX' int2str(i)];
@@ -90,21 +87,16 @@ for k=1:length(eegfiles)
             if isfirst
                 isfirst = 0;
             else
-                dollar_chan_str = [dollar_chan_str ', '];
+                set_to_misc_str = [set_to_misc_str ', '];
             end
-            dollar_chan_str = [dollar_chan_str newname];
-            break;
+            set_to_misc_str = [set_to_misc_str newname];
         end
     end
 
     bst_save(file_fullpath(sFileRaw.ChannelFile), ChannelMat, 'v7', 1);
 
     bst_process('CallProcess', 'process_channel_settype', sFileRaw, [], ...
-                'sensortypes', misc_present_str, ...
-                'newtype',     'MISC');
-
-    bst_process('CallProcess', 'process_channel_settype', sFileRaw, [], ...
-                'sensortypes', dollar_chan_str, ...
+                'sensortypes', set_to_misc_str, ...
                 'newtype',     'MISC');
 end
 
