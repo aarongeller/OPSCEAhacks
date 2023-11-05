@@ -84,18 +84,16 @@ for k=1:length(eegfiles)
     dollar_chan_str = '';
     isfirst = 1;
     for i=1:length(ChannelMat.Channel)
-        for j=1:length(misc_channels)
-            if strcmp(ChannelMat.Channel(i).Name(1), "$")
-                newname = ['XXX' int2str(i)];
-                ChannelMat.Channel(i).Name = newname;
-                if isfirst
-                    isfirst = 0;
-                else
-                    dollar_chan_str = [dollar_chan_str ', '];
-                end
-                dollar_chan_str = [dollar_chan_str newname];
-                break;
+        if strcmp(ChannelMat.Channel(i).Name(1), "$")
+            newname = ['XXX' int2str(i)];
+            ChannelMat.Channel(i).Name = newname;
+            if isfirst
+                isfirst = 0;
+            else
+                dollar_chan_str = [dollar_chan_str ', '];
             end
+            dollar_chan_str = [dollar_chan_str newname];
+            break;
         end
     end
 
