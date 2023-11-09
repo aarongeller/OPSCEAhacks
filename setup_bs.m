@@ -14,16 +14,17 @@ if ~exist('subj', 'var')
     % debug mode
     subj = 'notUCHZG';
     fssubjdir = fullfile(fsdir, 'UCHZG');
+    eegdir = fullfile(fssubjdir, 'eeg');
 else
     fssubjdir = fullfile(fsdir, subj);
     % anonymize EDF file
-    cd eegdir;
+    eegdir = fullfile(fssubjdir, 'eeg');
+    cd(eegdir);
     clean_edf_data(subj);
 end
 
 ctdir = fullfile(fssubjdir, 'ct');
 ctfile = dir(fullfile(ctdir, '*.nii.gz'));
-eegdir = fullfile(fssubjdir, 'eeg');
 eegfiles = dir(fullfile(eegdir, '*.edf'));
 
 protocolname = 'IEEG_Visualization';
