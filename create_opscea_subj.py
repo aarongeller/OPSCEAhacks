@@ -14,6 +14,7 @@ class OpsceaMaker(ABC):
     def __init__(self):
         self.handle_args()
         os.environ['SUBJECTS_DIR'] = os.path.join(os.environ['FREESURFER_HOME'], "subjects")
+        os.environ['PATH'] = os.environ['PATH'] + ":" + os.path.join(os.environ['FREESURFER_HOME'], "bin")
         self.freesurfer_subjdir = os.path.join(os.environ['SUBJECTS_DIR'], self.subjname)
         self.fs_eeg_dir = os.path.join(self.freesurfer_subjdir, 'eeg')
         self.all_eeg_files = glob(os.path.join(self.fs_eeg_dir, '*.edf'))
