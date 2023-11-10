@@ -589,7 +589,7 @@ end
 if dopdf
     close all;
     if ~exist('selected_leads', 'var')
-        export_bs_figs(pt, channel_mat, [ptpath 'Imaging/Recon/figs']);
+        export_bs_figs(pt, channel_mat, [ptpath 'Imaging/Recon/figs'], depthcolor, depthlabels);
     end
     system(['python make_slice_pdf.py ' pt]);
 end
