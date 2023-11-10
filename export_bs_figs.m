@@ -1,4 +1,4 @@
-function export_bs_figs(subj, channel_mat, outputdir)
+function export_bs_figs(subj, channel_mat, outputdir, colors, labels)
 
 % export figures from Brainstorm showing all electrodes, viewed
 % from left, right, front and bottom, and export movies showing
@@ -11,6 +11,15 @@ protocolname = ch_mat_parts{end-4};
 if ~brainstorm('status')
     brainstorm nogui
 end
+
+% set electrode colors to match OPSCEA colors
+load(channel_mat);
+[~, sortind] = sort(labels);
+for i=1:length(IntraElectrodes)
+    IntraElectrodes(i).Color = colors{sortind(i+3)};
+end
+s = who('-file', channel_mat);
+save(channel_mat, s{:});
 
 gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
 [hFig, iDS, iFig] = view_channels_3d({channel_mat}, 'SEEG', 'cortex', 1, 0);
