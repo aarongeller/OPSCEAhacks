@@ -1,4 +1,4 @@
-function setup_bs(subj)
+function setup_bs(subj, norename)
 
 % prepare subject in brainstorm: anonymyze EDF, load MRI, coregister CT, load EEG
 % and edit channel file
@@ -6,6 +6,10 @@ function setup_bs(subj)
 % check if brainstorm is running and if not, start it
 if ~brainstorm('status')
     brainstorm;
+end
+
+if ~exist('norename', 'var')
+    norename = 0;
 end
 
 fsdir = '/Applications/freesurfer/subjects';
@@ -17,10 +21,12 @@ if ~exist('subj', 'var')
     eegdir = fullfile(fssubjdir, 'eeg');
 else
     fssubjdir = fullfile(fsdir, subj);
-    % anonymize EDF file
     eegdir = fullfile(fssubjdir, 'eeg');
-    cd(eegdir);
-    clean_edf_data(subj);
+    if ~norename
+        % anonymize EDF file
+        cd(eegdir);
+        clean_edf_data(subj);
+    end
 end
 
 ctdir = fullfile(fssubjdir, 'ct');
