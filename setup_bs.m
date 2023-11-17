@@ -58,13 +58,12 @@ for k=1:length(eegfiles)
     sFileRaw = bst_process('CallProcess', 'process_import_data_raw', [], [], ...
                            'subjectname',    subj, ...
                            'datafile',       {{fullfile(eegdir,eegfiles(k).name)}, 'SEEG-ALL'}, ...
-                           'channelreplace', 0, ...
-                           'channelalign',   0);
+                           'channelreplace', 0, 'channelalign',   0);
 
     % edit channelfile
     % 1) set type to SEEG
     bst_process('CallProcess', 'process_channel_setseeg', sFileRaw, []);
-    % 2) find channels named EKG1, Annotations, SpO2, EtCO2, Pulse, CO2Wave
+
     % Get channel file
     [sStudy, iStudy] = bst_get('ChannelFile', sFileRaw.ChannelFile);
     ChannelMat = in_bst_channel(sFileRaw.ChannelFile);
@@ -72,6 +71,7 @@ for k=1:length(eegfiles)
     set_to_misc_str = '';
     isfirst = 1;
     for i=1:length(ChannelMat.Channel)
+        % 2) find channels named EKG1, Annotations, SpO2, EtCO2, Pulse, CO2Wave
         for j=1:length(misc_channels)
             if strcmp(ChannelMat.Channel(i).Name, misc_channels(j))
                 if isfirst
@@ -83,11 +83,8 @@ for k=1:length(eegfiles)
                 break;
             end
         end
-    end
 
-    % 3) find channels starting with $, rename them and set to MISC
-
-    for i=1:length(ChannelMat.Channel)
+        % 3) find channels starting with $, rename them and set to MISC
         if strcmp(ChannelMat.Channel(i).Name(1), "$")
             newname = ['XXX' int2str(i)];
             ChannelMat.Channel(i).Name = newname;
@@ -103,8 +100,7 @@ for k=1:length(eegfiles)
     bst_save(file_fullpath(sFileRaw.ChannelFile), ChannelMat, 'v7', 1);
 
     bst_process('CallProcess', 'process_channel_settype', sFileRaw, [], ...
-                'sensortypes', set_to_misc_str, ...
-                'newtype',     'MISC');
+                'sensortypes', set_to_misc_str, 'newtype', 'MISC');
 end
 
 % manual parts: 
