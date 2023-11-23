@@ -10,6 +10,9 @@ import pandas as pd
 from glob import glob
 from abc import ABC, abstractmethod
 
+# user needs to set this variable to the Brainstorm protocol for IEEG recons
+protocolname = "IEEG_visualization"
+
 class OpsceaMaker(ABC):
     def __init__(self):
         self.handle_args()
@@ -277,8 +280,12 @@ class OpsceaMaker(ABC):
         return s[:endnum+1]
 
 class BrainstormOpsceaMaker(OpsceaMaker):
+    def __init__(self, protocolname):
+        super().__init__()
+        self.protocolname = protocolname
+
     def do_imaging_elecs(self):
-        path_to_brainstormdb =  os.path.join(os.environ['HOME'], "Documents/brainstorm_db/IEEG_visualization/")
+        path_to_brainstormdb =  os.path.join(os.environ['HOME'], "Documents/brainstorm_db", self.protocolname)
         brainstorm_channel_data_path = os.path.join(path_to_brainstormdb, "data", self.subjname, "*", "channel.mat") 
         # necessary because importing any edf to brainstorm creates a
         # channel.mat with null coordinates for each electrode, so we
@@ -459,5 +466,5 @@ class EEGfilenameException(Exception):
     pass
 
 if __name__=="__main__":
-    om = BrainstormOpsceaMaker()
+    om = BrainstormOpsceaMaker(protocolname)
     om.driver()
