@@ -33,7 +33,7 @@ ctdir = fullfile(fssubjdir, 'ct');
 ctfile = dir(fullfile(ctdir, '*.nii.gz'));
 eegfiles = dir(fullfile(eegdir, '*.edf'));
 
-protocolname = 'IEEG_Visualization';
+protocolname = 'IEEG_visualization';
 gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
 
 % Create subject
