@@ -15,8 +15,16 @@ end
 % set electrode colors to match OPSCEA colors
 load(channel_mat);
 [~, sortind] = sort(labels);
+adjustnum = 0;
 for i=1:length(IntraElectrodes)
-    IntraElectrodes(i).Color = colors{sortind(i+3)};
+    if i+3-adjustnum > length(sortind)
+        break;
+    elseif ~strcmp(IntraElectrodes(i).Name, labels{sortind(i+3-adjustnum)})
+        % handle case where IntraElectrodes has non-SEEG channels
+        adjustnum = adjustnum + 1;
+    else
+        IntraElectrodes(i).Color = colors{sortind(i+3-adjustnum)};
+    end
 end
 s = who('-file', channel_mat);
 save(channel_mat, s{:});
