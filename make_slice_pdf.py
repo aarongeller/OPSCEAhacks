@@ -19,7 +19,7 @@ if len(subjname_parts) > 1:
     subjname = "\_".join(subjname_parts)
 
 title = subjname + " ICEEG Implant Reconstruction"
-preamble = "\\documentclass[12pt]{article}\n\\usepackage{graphicx}\n\\usepackage{hyperref}\n" \
+preamble = "\\documentclass[12pt]{article}\n\\usepackage{graphicx, hyperref}\n" \
     + "\\hypersetup{colorlinks=true,linkcolor=blue,pdftitle={" + title + "}}\n" \
     + "\\renewcommand{\\familydefault}{\\sfdefault}\n\\title{" + title + "}\n" \
     + "\\begin{document}\n\\maketitle\n\n\\tableofcontents\n\clearpage\n\n"
