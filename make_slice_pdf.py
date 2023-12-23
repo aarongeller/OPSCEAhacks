@@ -18,7 +18,11 @@ subjname_parts = subjname.split("_")
 if len(subjname_parts) > 1:
     subjname = "\_".join(subjname_parts)
 
-preamble = "\\documentclass[12pt]{article}\n\\usepackage{graphicx}\n\\usepackage{hyperref}\n\\hypersetup{colorlinks=true,linkcolor=blue}\n\\renewcommand{\\familydefault}{\\sfdefault}\n\\title{" + subjname + " ICEEG Implant Reconstruction}\n\\begin{document}\n\\maketitle\n\n\\tableofcontents\n\clearpage\n\n"
+title = subjname + " ICEEG Implant Reconstruction"
+preamble = "\\documentclass[12pt]{article}\n\\usepackage{graphicx}\n\\usepackage{hyperref}\n" \
+    + "\\hypersetup{colorlinks=true,linkcolor=blue,pdftitle={" + title + "}}\n" \
+    + "\\renewcommand{\\familydefault}{\\sfdefault}\n\\title{" + title + "}\n" \
+    + "\\begin{document}\n\\maketitle\n\n\\tableofcontents\n\clearpage\n\n"
 texf.write(preamble)
 
 surfsize_a = 0.4
@@ -36,7 +40,12 @@ for f in imgfiles:
         wholebrains.append(f)
 
 if len(wholebrains)==4:
-    texlines = "\\setcounter{section}{-1}\\section{Whole Brain}\n\\begin{tabular}{cc}\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[1] + "} &\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[0] + "}\\\\\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[2] + "} &\n\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[3] + "}\\\\\n\\end{tabular}\n\\clearpage\n\n"
+    texlines = "\\setcounter{section}{-1}\\section{Whole Brain}\n\\begin{tabular}{cc}\n" \
+        + "\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[1] + "} &\n" \
+        + "\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[0] + "}\\\\\n" \
+        + "\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[2] + "} &\n" \
+        + "\\includegraphics[width=" + str(wholebrainsize) + "\\textwidth]{" + wholebrains[3] + "}\\\\\n" \
+        + "\\end{tabular}\n\\clearpage\n\n"
     texf.write(texlines)
     
 for f in imgfiles:
@@ -49,7 +58,14 @@ for f in imgfiles:
     coronal_nonsurf = os.path.join(os.path.dirname(f), fparts[0] + "_" + fparts[1] + "_c.png")
     elecname = fparts[1]
     labelfile = os.path.join(opscea_labeldir, elecname + "_labels")
-    texlines = "\\section{" + elecname + "}\n\\subsection{" + elecname + " Axial View}\n\\includegraphics[width=" + str(surfsize_a) + "\\textwidth]{" + axial_surf + "}\\\\\n\\includegraphics[width=" + str(slicesize_a) + "\\textwidth]{" + axial_nonsurf + "}\n\n\\subsection{" + elecname + " Coronal View}\n\\includegraphics[width=" + str(surfsize_c) + "\\textwidth]{" + coronal_surf + "}\\\\\n\\includegraphics[width=" + str(slicesize_c) + "\\textwidth]{" + coronal_nonsurf + "}\n\n\\subsection{" + elecname + " FreeSurfer Labels}\n\\begin{tabular}{ll}\n\\input{" + labelfile + "}\n\\end{tabular}\n\\clearpage\n\n"
+    texlines = "\\section{" + elecname + "}\n\\subsection{" + elecname + " Axial View}\n" \
+        + "\\includegraphics[width=" + str(surfsize_a) + "\\textwidth]{" + axial_surf + "}\\\\\n" \
+        + "\\includegraphics[width=" + str(slicesize_a) + "\\textwidth]{" + axial_nonsurf + "}\n\n" \
+        + "\\subsection{" + elecname + " Coronal View}\n" \
+        + "\\includegraphics[width=" + str(surfsize_c) + "\\textwidth]{" + coronal_surf + "}\\\\\n" \
+        + "\\includegraphics[width=" + str(slicesize_c) + "\\textwidth]{" + coronal_nonsurf + "}\n\n" \
+        + "\\subsection{" + elecname + " FreeSurfer Labels}\n\\begin{tabular}{ll}\n" \
+        + "\\input{" + labelfile + "}\n\\end{tabular}\n\\clearpage\n\n"
     texf.write(texlines)
 
 postamble = "\\end{document}\n"
