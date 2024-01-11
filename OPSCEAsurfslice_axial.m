@@ -26,6 +26,11 @@ global I; %contains elecmatrix (coordinates), weights (for heatmap), and index o
 global salphamask;
 
 if nargin<3; error('surfslice requires at least 3 input arguments'); end
+
+if ~exist('force_angle', 'var')
+    force_angle = NaN;
+end
+
 %% this section sets up paths and filenames
 fsbin = strcat(fs_dir,'/bin/');
 subjectpath = strcat(subj_dir,'/',subject,'/Imaging');
