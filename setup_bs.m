@@ -3,6 +3,8 @@ function setup_bs(subj, norename)
 % prepare subject in brainstorm: anonymyze EDF, load MRI, coregister CT, load EEG
 % and edit channel file
 
+tic;
+
 % check if brainstorm is running and if not, start it
 if ~brainstorm('status')
     brainstorm;
@@ -102,6 +104,8 @@ for k=1:length(eegfiles)
     bst_process('CallProcess', 'process_channel_settype', sFileRaw, [], ...
                 'sensortypes', set_to_misc_str, 'newtype', 'MISC');
 end
+
+toc;
 
 % manual parts: 
 % check coregistration
