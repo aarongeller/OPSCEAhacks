@@ -19,12 +19,11 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
 
 ## Workflow
 1. Run FreeSurfer.
-2. In Brainstorm,
- * Load MRI,
- * Co-register CT, and
- * Mark electrodes.
-3. Run `create_opscea_subj.py`
-4. Edit OPSCEAparams.xls
+2. In Matlab,
+ * Run `create_brainstorm_subj.m`.
+ * Use Brainstorm to mark electrodes.
+3. Run `create_opscea_subj.py`.
+4. Edit OPSCEAparams.xls.
 5. Run `OPSCEA.m` or `OPSCEA_recon.m`.
 
 ## Future Directions
