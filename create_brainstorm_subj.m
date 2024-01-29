@@ -1,4 +1,4 @@
-function setup_bs(subj, norename)
+function create_brainstorm_subj(subj, norename)
 
 % prepare subject in brainstorm: anonymyze EDF, load MRI, coregister CT, load EEG
 % and edit channel file
