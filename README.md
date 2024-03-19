@@ -8,7 +8,7 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
 2. A function, `OPSCEA_recon`, that exports slice images (without EEG heatmaps, including both coronal and axial/sagittal views) and compiles a pdf document of the reconstruction.
 
 ### Minor tweaks:
-1. Simplified interface for OPSCEAparams.xls, that eliminates the need to specify the extreme contacts and desired color code for each electrode.
+1. Simplified interface for `OPSCEAparams.xls`, that eliminates the need to specify the extreme contacts and desired color code for each electrode.
 2. Movie filename includes seizure time (taken from seizure .mat name) and fps, and if an existing movie with the designated name already exists, a new name will be used to prevent automatic over-writing.
 
 ## Dependencies
