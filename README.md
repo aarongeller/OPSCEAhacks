@@ -23,7 +23,7 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
  * Run `create_brainstorm_subj.m`.
  * Use Brainstorm to mark electrodes.
 3. Run `create_opscea_subj.py`.
-4. Edit OPSCEAparams.xls.
+4. Edit `OPSCEAparams.xls`.
 5. Run `OPSCEA.m` or `OPSCEA_recon.m`.
 
 ## Future Directions
