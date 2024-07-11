@@ -30,9 +30,9 @@ class OpsceaMaker(ABC):
 
     def handle_args(self):
         if len(sys.argv) < 2:
-            print("Usage: python3.8 create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>")
+            print("Usage: python create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>")
             print("\twhere SUBJ is a directory in /Applications/freesurfer/subjects")
-            print("\toptional args: hemisphere, do_subcort, do_label, numberlabels, low pass freq, and list of electrodes ending with a digit.")
+            print("\toptional args: hemisphere, do_subcort, do_label, low pass freq, and list of electrodes ending with a digit.")
             quit()
             
         self.subjname = sys.argv[1]
@@ -403,7 +403,10 @@ class BrainstormOpsceaMaker(OpsceaMaker):
         for k,v in self.contactdict.items():
             numcontacts = v[1] - v[0] + 1
             for i in range(numcontacts):
-                self.contiguous_labels.append(k + str(int(i+1)))
+                if k in self.numberlabels:
+                    self.contiguous_labels.append(k + "-" + str(int(i+1)))
+                else:
+                    self.contiguous_labels.append(k + str(int(i+1)))
 
         # make a list of indices of channels we will select from the edf
         self.included_channels = []
