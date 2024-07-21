@@ -50,21 +50,17 @@ if ~exist('dopdf', 'var')
     dopdf = 1;
 end
 
-sz = '01'; % remove
+sz = '01'; % for recon, assume we will use this
 
 opsceapath=['/Users/aaron/Documents/MATLAB/OPSCEA-main/']; % AG
 
-% opsceapath=['/Users/kleentestaccount/Desktop/OPSCEA/'];   %path for parameters sheet
 opsceadatapath=[opsceapath 'OPSCEADATA/'];   %path for OPSCEA ICEEG and imaging data
 if ~exist(opsceadatapath,'dir')
     error('Directory for your data needs to be corrected'); 
 end
 cd(opsceapath);
 
-ptsz=[pt '_' sz]; % prefix for filenames of specific seizure
 ptpath=[opsceadatapath pt '/']; % patient's folder
-szpath= [ptpath ptsz '/']; % specific seizure's folder
-disp(['Running ' pt ', seizure ' sz '...']);
 
 %% Initiate global variables
   global S; % holds general parameters
@@ -77,7 +73,7 @@ disp(['Running ' pt ', seizure ' sz '...']);
 %% Import parameters
 % for specific seizure 
 [~,prm_allPtSz]=xlsread([opsceapath 'OPSCEAparams'],'params'); 
-fields_SZ=prm_allPtSz(1,:); % header for columns of seizure parameters
+% fields_SZ=prm_allPtSz(1,:); % header for columns of seizure parameters
 prm=prm_allPtSz(strcmp(pt,prm_allPtSz(:,1))&strcmp(sz,prm_allPtSz(:,2)),:);
 if isempty(prm); error(['ATTENTION: No entry exists for ' pt ' seizure ' sz ' in the params master sheet']); end
 % Import parameters for patient's specific plot (layout of video frame)
@@ -187,60 +183,10 @@ if any(isdepth)
     pltshowplanes=str2double(plt(:,strcmpi(fields_PLOT,'showplanes')))==1; %logical index of plots in which to show slice planes
 end
 
-%% Get time segments within the ICEEG file to use
-VIDstart=prm(:,strcmpi(fields_SZ,'VIDstart')); VIDstop=prm(:,strcmpi(fields_SZ,'VIDstop')); %chunk of data (seconds into ICEEG data file) to use from the whole ICEEG data clip for the video
-S.VIDperiod=[str2double(VIDstart{1}) str2double(VIDstop{1})];
-if exist('timewindow', 'var') & ~isempty(timewindow)
-    S.VIDperiod = timewindow;
-end
-BLstart=prm(:,strcmpi(fields_SZ,'BLstart')); BLstop=prm(:,strcmpi(fields_SZ,'BLstop')); %chunk of data (seconds into ICEEG data file) to use for baseline (for z-score step)
-S.BLperiod=[str2double(BLstart{1}) str2double(BLstop{1})];
-
-%transform, scaling, and display options
-S.llw=str2double(prm{strcmp('llw',fields_SZ)}); %default linelength window (in seconds)
-S.iceeg_scale=prm{strcmp('iceeg_scale',fields_SZ)}; %percentile (number >50 and <100), used here similar to gain ICEEG waveform display, usually 95
-if ischar(S.iceeg_scale); S.iceeg_scale=str2double(S.iceeg_scale); end 
-S.fps=str2double(prm{strcmp('fps',fields_SZ)});             %frames per sec of ICEEG (default 15)
-S.cax=str2double(regexp(prm{strcmp('cax',fields_SZ)},',','split'));         %color axis for heatmap
-S.gsp=str2double(prm{strcmp('gsp',fields_SZ)}); %gaussian spreading parameter (default 10)
-params={'iceeg_scale','fps','cax','gsp'}; 
-paramsnans=isnan([(isnan(S.iceeg_scale) | S.iceeg_scale<=50 | S.iceeg_scale>=100)   S.fps   any(isnan(S.cax)) S.gsp]); 
-if any(paramsnans); error(['ATTENTION OPSCEA USER: The "' params{paramsnans} '" term(s) is/are in an incorrect format (perhaps number instead of string), check excel seizure parameter sheet']); 
-end 
-cm=prm{strcmp('cm',fields_SZ)};
-switch cm; case 'cmOPSCEAcool'; cm=cmOPSCEAcool; 
-  case 'cmOPSCEAjet'; cm=cmOPSCEAjet; 
-end
-S.cm=cm; %colormap to use for heatmap
-S.iceegwin=str2double(prm{strcmp('iceegwin',fields_SZ)}); %how much trace-based ICEEG to view at a time in the ICEEG window
-S.marg=str2double(prm{strcmp('marg',fields_SZ)}); %offset of real-time LL txform from beginning of viewing window (in sec; converts to samples below)
-S.slicebright=str2double(prm{strcmp('slicebright',fields_SZ)}); if isnan(S.slicebright); S.slicebright=0; end %brighten up slices (usually 0 to 50)
-
-
-% additional adjustment for display window
-S.VIDperiod=[S.VIDperiod(1)-S.marg   S.VIDperiod(2)+S.iceegwin-S.marg]; 
-S.fields=fields_SZ; clear fields
-
 S.prm=prm; clear prm
 S.prm_allPtSz=prm_allPtSz; clear prm_allPtSz
 S=orderfields(S); %alphabetize the structure fields for ease of use/search
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% %% load ICEEG data, and the bad channels verified for that specific data
-szfname = dir([szpath ptsz '*_sz.mat']).name;
-load([szpath szfname])
-% load([szpath ptsz '_badch']); 
-% if size(d,1)>size(d,2); d=d'; end % orient to channels by samples
-[nch,ntp]=size(d); f=1; 
-% disp(['Length of data to play for video is ' num2str(round(ntp/sfx)) ' sec'])
-
-% % error checks for selected time periods
-% if any([S.VIDperiod(1) S.BLperiod(1)]<0)
-%     error('VIDperiod is out of bounds of file (time < 0). Check both VIDstart and BLstart times and make sure the "marg" value (subtracted from VIDstart and BLstart), cannot be < 0'); 
-% elseif any([S.VIDperiod(2) S.BLperiod(2)]>ntp)
-%     error('VIDperiod is beyond the length of the file. Check VIDstop and BLstop times vs. length of actual ICEEG data'); 
-% end 
 
 %% locate and load electrode file for labels and XYZ coordinates
 load([ptpath 'Imaging/Elecs/Electrodefile.mat']); 
@@ -338,23 +284,15 @@ axl(:,:,2)=[min(em); max(em)]; %%min and max of ELECTRODES' x y z coordinates (2
 axl=[min(axl(1,:,:),[],3); max(axl(2,:,:),[],3)]; % Get the minima and maxima of both
 axislim=reshape(axl,1,6)+[-1 1 -1 1 -1 1]*perim; clear axl %Use the, to define the axis boundaries, and add additional perimeter (perim)
 
-% %% formatting checks, and consolidation of bad channels
-ns=unique( [find(badch);   find(isnan(mean(em,2)));   find(isnan(mean(d,2)))]  ); % bad channels: those that are pre-marked, or if NaNs in their coordinates or ICEEG data traces
-nns=true(nch,1); nns(ns)=0; %nns=find(nns); %consolidate bad channels and those with NaNs
-% %remove data channels previously clipped at end. Only include that which has electrode coordinates (intracranial)
-% if size(em,1)>size(d,1); nch=size(em,1); d(nch+1:end,:)=[]; LL(nch+1:end,:)=[]; nns(nch+1:end)=[]; ns(ns>size(em,1))=[]; 
-%    fprintf(2, 'ALERT: Clipping off extra bad channel entries (make sure you have the right ICEEG and bad channel files loaded)\n');
-% end
-
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% PLOTTING TIME!
 sliceinfo=[]; loaf.vrf=[]; loaf.apasrf=[]; loaf.normloaf=[]; ...
 sliceinfo.viewangle=zeros(size(plt,1),3); sliceinfo.azel=[]; ...
 sliceinfo.corners=[]; loaf.isR=isR; loaf.isL=isL; loaf.isRdepth=isRdepth; loaf.isLdepth=isLdepth;
 clear F; 
-nch=length(find(nns)); 
 
-chanorder=1:size(d(nns,:),1); 
+nch = extremecontacts(end,2);
+nns = ones(1,nch);
 
 figure(1);
 set(gcf, 'color','w');

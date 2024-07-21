@@ -3,7 +3,7 @@
 # The script assumes recon-all has been done for SUBJ and electrodes
 # have been localized, with EEG saved as edf files under SUBJ/eeg.
 
-import os, sys, shutil, scipy.io, mne
+import os, sys, shutil, scipy.io, mne, argparse
 import numpy as np
 import numpy.matlib
 import pandas as pd
@@ -14,8 +14,8 @@ from abc import ABC, abstractmethod
 protocolname = "IEEG_visualization"
 
 class OpsceaMaker(ABC):
-    def __init__(self):
-        self.handle_args()
+    def __init__(self, myargv):
+        self.handle_args(myargv)
         os.environ['SUBJECTS_DIR'] = os.path.join(os.environ['FREESURFER_HOME'], "subjects")
         os.environ['PATH'] = os.environ['PATH'] + ":" + os.path.join(os.environ['FREESURFER_HOME'], "bin")
         self.freesurfer_subjdir = os.path.join(os.environ['SUBJECTS_DIR'], self.subjname)
@@ -28,43 +28,42 @@ class OpsceaMaker(ABC):
 
         # path_to_imgpipe = "/opt/local/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/img_pipe"
 
-    def handle_args(self):
-        if len(sys.argv) < 2:
+    def handle_args(self, myargv):
+        if len(myargv) < 2:
             print("Usage: python create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>")
             print("\twhere SUBJ is a directory in /Applications/freesurfer/subjects")
             print("\toptional args: hemisphere, do_subcort, do_label, low pass freq, and list of electrodes ending with a digit.")
             quit()
             
-        self.subjname = sys.argv[1]
+        self.subjname = myargv[0]
 
-        if len(sys.argv)>2:
-            self.hem = sys.argv[2]
+        if len(myargv)>1:
+            self.hem = myargv[1]
         else:
             self.hem = "stereo"
 
-        if len(sys.argv)>3:
-            self.do_subcort = int(sys.argv[3])
+        if len(myargv)>2:
+            self.do_subcort = int(myargv[2])
         else:
             self.do_subcort = 1
 
-        if len(sys.argv)>4:
-            self.do_label = int(sys.argv[4])
+        if len(myargv)>3:
+            self.do_label = int(myargv[3])
         else:
             self.do_label = 1
 
-        if len(sys.argv)>5:
-            self.lowpass = int(sys.argv[5])
+        if len(myargv)>4:
+            self.lowpass = int(myargv[4])
         else:
             self.lowpass = -1
 
-        if len(sys.argv)>6:
-            self.numberlabels = sys.argv[6:]
+        if len(myargv)>5:
+            self.numberlabels = myargv[5:]
         else:
             self.numberlabels = []
 
     def driver(self):
         self.do_imaging_dirs()
-        self.do_seizure_dirs()
         print("Done.")
 
     def do_imaging_dirs(self):
@@ -131,69 +130,6 @@ class OpsceaMaker(ABC):
         if self.do_label:
             self.do_label_output(os.path.join(self.opscea_subjdir, 'Imaging/Recon/labels'))
         
-    def do_seizure_dirs(self):
-        # process bad channel list if it's there
-        fs_badch_path = os.path.join(self.fs_eeg_dir, 'badch.xls')
-        try:
-            df = pd.read_excel(fs_badch_path, header=None)
-            bad_chans_list = list(df[0])
-            print("Processed bad channels from " + fs_badch_path + ".") 
-        except FileNotFoundError:
-            bad_chans_list = []
-
-        badch = []
-        numbad = 0
-        for cl in self.contiguous_labels:
-            if cl in bad_chans_list:
-                badch.append(1)
-                numbad += 1
-            else:
-                badch.append(0)
-
-        print(str(numbad) + " channels marked bad.")    
-        badch = np.transpose([np.array(badch)])
-
-        # create seizure directories
-        for i,f in enumerate(self.all_eeg_files):
-            print("====> Importing seizure %d from %s..." % (int(i+1), f))
-            # load edf
-            raw = mne.io.read_raw_edf(f, preload=True, verbose=False) 
-            # get SR
-            sfx = raw.info.get('sfreq')
-
-            d_unfiltered = raw.get_data(picks=self.included_channels) # this reorders channels according to contiguous_labels
-            if self.lowpass > 0:
-                d = mne.filter.filter_data(d_unfiltered, sfx, l_freq=None, h_freq=self.lowpass, verbose=False)
-                if self.lowpass > 60:
-                    d = mne.filter.notch_filter(d, sfx, 60, verbose=False)
-            else:
-                d = mne.filter.notch_filter(d_unfiltered, sfx, 60, verbose=False) # mne 60 hz notch with default settings
-
-            sznumstr = "_%02d" % int(i+1)
-            szstring = self.subjname + sznumstr
-            szdir = os.path.join(self.opscea_subjdir, szstring)
-            if not os.path.isdir(szdir):
-                os.makedirs(szdir)
-            
-            fstem = f.split('/')[-1][:-4]
-            fstemparts = fstem.split("_")
-
-            # handle patient labels with underscore(s)
-            if len(fstemparts)==8:
-                ptlabel_limit = 1
-            elif len(fstemparts)==9:
-                ptlabel_limit = 2
-            else:
-                raise EEGFilenameException("Unexpected format for patient label.")
-
-            szmatname = "_".join(fstemparts[:ptlabel_limit]) + sznumstr + "__" + "_".join(fstemparts[ptlabel_limit:]) + "_sz.mat"
-            output_path = os.path.join(szdir, szmatname)
-            scipy.io.savemat(output_path, {'d': d, 'sfx': sfx})
-
-            badch_matname = szstring + "_badch.mat"
-            badch_output_path = os.path.join(szdir, badch_matname)
-            scipy.io.savemat(badch_output_path, {'badch': badch})
-
     def do_label_output(self, outputdir):
         stem = ''
         for ll in self.fslabels:
@@ -280,8 +216,8 @@ class OpsceaMaker(ABC):
         return s[:endnum+1]
 
 class BrainstormOpsceaMaker(OpsceaMaker):
-    def __init__(self, protocolname):
-        super().__init__()
+    def __init__(self, protocolname, myargv):
+        super().__init__(myargv)
         self.protocolname = protocolname
 
     def do_imaging_elecs(self):
@@ -351,8 +287,6 @@ class BrainstormOpsceaMaker(OpsceaMaker):
         self.bslabels = np.transpose(np.array(bslabels))
         coords_list = df[rowsel]['Loc']
         
-        raw = mne.io.read_raw_edf(self.all_eeg_files[0], verbose=False)
-        self.edflabels = raw.info.get('ch_names')
         self.get_contiguous_labels()
         
         elecdict = {} # map contacts to 3D coordinates
@@ -363,21 +297,17 @@ class BrainstormOpsceaMaker(OpsceaMaker):
         
         return elecmatrix
 
+    def filter_labels(self):
+        included_labels = []
+        for b in self.bslabels:
+            included_labels.append(b[0])
+        return included_labels
+
     def get_contiguous_labels(self):
         # first, choose the channels; use bslabels to exclude unwanted
         # ones like $LOF11
         
-        non_seeg_channels = ["SpO2", "EtCO2", "Pulse", "CO2Wave", "EKG", "EKG1", "EKG2", "BP1", "Annotations"]
-        included_labels = []
-        edfdict = {} # map label to edf channel #
-        for e in self.bslabels:
-            label = self.remove_spacers(e[0]) # handle underscore/space
-            if label not in non_seeg_channels:
-                for k,edl in enumerate(self.edflabels):
-                    if edl[0:4]=='POL ' and self.remove_spacers(edl[4:])==label:
-                        included_labels.append(label)
-                        edfdict[label] = k
-                        break
+        included_labels = self.filter_labels()
 
         # make a dict to record the extreme contacts for each lead
         included_labels.sort()
@@ -407,11 +337,6 @@ class BrainstormOpsceaMaker(OpsceaMaker):
                     self.contiguous_labels.append(k + "-" + str(int(i+1)))
                 else:
                     self.contiguous_labels.append(k + str(int(i+1)))
-
-        # make a list of indices of channels we will select from the edf
-        self.included_channels = []
-        for cl in self.contiguous_labels:
-            self.included_channels.append(edfdict[cl])
 
     def do_mri_coordinate_transformation(self, bsmatrix, bs_anat_path):
         # transform brainstorm (SCS) coordinates to World coordinates (via
@@ -468,6 +393,106 @@ class DollarException(ChanfileException):
 class EEGfilenameException(Exception):
     pass
 
+class EDFBrainstormOpsceaMaker(BrainstormOpsceaMaker):
+    def __init__(self, protocolname, myargv):
+        super().__init__(protocolname, myargv)
+        raw = mne.io.read_raw_edf(self.all_eeg_files[0], verbose=False)
+        self.edflabels = raw.info.get('ch_names')
+
+    def filter_labels(self):
+        self.edfdict = {} # map label to edf channel #
+        included_labels = []
+        non_seeg_channels = ["SpO2", "EtCO2", "Pulse", "CO2Wave", "EKG", "EKG1", "EKG2", "BP1", "Annotations"]
+        for e in self.bslabels:
+            label = self.remove_spacers(e[0]) # handle underscore/space
+            if label not in non_seeg_channels:
+                for k,edl in enumerate(self.edflabels):
+                    if edl[0:4]=='POL ' and self.remove_spacers(edl[4:])==label:
+                        included_labels.append(label)
+                        self.edfdict[label] = k
+                        break
+        return included_labels
+
+    def do_seizure_dirs(self):
+        # make a list of indices of channels we will select from the edf
+        self.included_channels = []
+        for cl in self.contiguous_labels:
+            self.included_channels.append(self.edfdict[cl])
+
+        # process bad channel list if it's there
+        fs_badch_path = os.path.join(self.fs_eeg_dir, 'badch.xls')
+        try:
+            df = pd.read_excel(fs_badch_path, header=None)
+            bad_chans_list = list(df[0])
+            print("Processed bad channels from " + fs_badch_path + ".")
+        except FileNotFoundError:
+            bad_chans_list = []
+
+        badch = []
+        numbad = 0
+        for cl in self.contiguous_labels:
+            if cl in bad_chans_list:
+                badch.append(1)
+                numbad += 1
+            else:
+                badch.append(0)
+
+        print(str(numbad) + " channels marked bad.")
+        badch = np.transpose([np.array(badch)])
+
+        # create seizure directories
+        for i,f in enumerate(self.all_eeg_files):
+            print("====> Importing seizure %d from %s..." % (int(i+1), f))
+            # load edf
+            raw = mne.io.read_raw_edf(f, preload=True, verbose=False)
+            # get SR
+            sfx = raw.info.get('sfreq')
+
+            d_unfiltered = raw.get_data(picks=self.included_channels) # this reorders channels according to contiguous_labels
+            if self.lowpass > 0:
+                d = mne.filter.filter_data(d_unfiltered, sfx, l_freq=None, h_freq=self.lowpass, verbose=False)
+                if self.lowpass > 60:
+                    d = mne.filter.notch_filter(d, sfx, 60, verbose=False)
+            else:
+                d = mne.filter.notch_filter(d_unfiltered, sfx, 60, verbose=False) # mne 60 hz notch with default settings
+
+            sznumstr = "_%02d" % int(i+1)
+            szstring = self.subjname + sznumstr
+            szdir = os.path.join(self.opscea_subjdir, szstring)
+            if not os.path.isdir(szdir):
+                os.makedirs(szdir)
+
+            fstem = f.split('/')[-1][:-4]
+            fstemparts = fstem.split("_")
+
+            # handle patient labels with underscore(s)
+            if len(fstemparts)==8:
+                ptlabel_limit = 1
+            elif len(fstemparts)==9:
+                ptlabel_limit = 2
+            else:
+                raise EEGFilenameException("Unexpected format for patient label.")
+
+            szmatname = "_".join(fstemparts[:ptlabel_limit]) + sznumstr + "__" + "_".join(fstemparts[ptlabel_limit:]) + "_sz.mat"
+            output_path = os.path.join(szdir, szmatname)
+            scipy.io.savemat(output_path, {'d': d, 'sfx': sfx})
+
+            badch_matname = szstring + "_badch.mat"
+            badch_output_path = os.path.join(szdir, badch_matname)
+            scipy.io.savemat(badch_output_path, {'badch': badch})
+
+    def driver(self):
+        self.do_imaging_dirs()
+        self.do_seizure_dirs()
+        print("Done.")
+
 if __name__=="__main__":
-    om = BrainstormOpsceaMaker(protocolname)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('myargv', nargs='+')
+    parser.add_argument('--noedf', action='store_true')
+    args = parser.parse_args()
+    if args.noedf:
+        om = BrainstormOpsceaMaker(protocolname, args.myargv)
+    else:
+        om = EDFBrainstormOpsceaMaker(protocolname, args.myargv)
     om.driver()
