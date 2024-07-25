@@ -29,7 +29,7 @@ class OpsceaMaker(ABC):
         # path_to_imgpipe = "/opt/local/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/img_pipe"
 
     def handle_args(self, myargv):
-        if len(myargv) < 2:
+        if len(myargv) < 1:
             print("Usage: python create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>")
             print("\twhere SUBJ is a directory in /Applications/freesurfer/subjects")
             print("\toptional args: hemisphere, do_subcort, do_label, low pass freq, and list of electrodes ending with a digit.")
