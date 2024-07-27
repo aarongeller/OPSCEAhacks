@@ -73,7 +73,7 @@ ptpath=[opsceadatapath pt '/']; % patient's folder
 %% Import parameters
 % for specific seizure 
 [~,prm_allPtSz]=xlsread([opsceapath 'OPSCEAparams'],'params'); 
-% fields_SZ=prm_allPtSz(1,:); % header for columns of seizure parameters
+fields_SZ=prm_allPtSz(1,:); % header for columns of seizure parameters
 prm=prm_allPtSz(strcmp(pt,prm_allPtSz(:,1))&strcmp(sz,prm_allPtSz(:,2)),:);
 if isempty(prm); error(['ATTENTION: No entry exists for ' pt ' seizure ' sz ' in the params master sheet']); end
 % Import parameters for patient's specific plot (layout of video frame)
@@ -182,6 +182,16 @@ if any(isdepth)
     pltzoom=str2double(plt(:,strcmpi(fields_PLOT,'pltzoom')));
     pltshowplanes=str2double(plt(:,strcmpi(fields_PLOT,'showplanes')))==1; %logical index of plots in which to show slice planes
 end
+
+% these settings are not actually used for OPSCEA_recon
+S.cax=str2double(regexp(prm{strcmp('cax',fields_SZ)},',','split'));
+cm=prm{strcmp('cm',fields_SZ)};
+switch cm;
+  case 'cmOPSCEAcool'; cm=cmOPSCEAcool;
+  case 'cmOPSCEAjet'; cm=cmOPSCEAjet;
+end
+S.cm=cm; %colormap to use for heatmap
+S.gsp=str2double(prm{strcmp('gsp',fields_SZ)}); %gaussian spreading parameter (default 10)
 
 S.prm=prm; clear prm
 S.prm_allPtSz=prm_allPtSz; clear prm_allPtSz
