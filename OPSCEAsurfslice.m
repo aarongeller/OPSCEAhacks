@@ -1,4 +1,4 @@
-function OPSCEAsurfslice(subject,orientation,elecs,weights,subj_dir,fs_dir,cax,CM,gsp,j,isfirstframe,force_angle)
+function OPSCEAsurfslice(subject,orientation,elecs,weights,subj_dir,fs_dir,cax,CM,gsp,j,isfirstframe,adjust_coords,force_angle)
 %     (This is a subfunction created as a part of) Omni-planar and surface
 %     casting of epileptiform activity (OPSCEA) (UC Case Number SF2020-281)
 %     jointly created by Dr. Jon Kleen, Ben Speidel, Dr. Robert Knowlton,
@@ -25,6 +25,10 @@ global S; %contains data & info about the ECoG data and add'l parameters from ex
 global I; %contains elecmatrix (coordinates), weights (for heatmap), and index of channels to skip
 global salphamask;
 if nargin<3; error('surfslice requires at least 3 input arguments'); end
+
+if ~exist('adjust_coords', 'var')
+    adjust_coords = [0 0 0];
+end
 
 if ~exist('force_angle', 'var')
     force_angle = NaN;
@@ -61,11 +65,12 @@ end
 alphamask = ones(size(loaf.apasrf)); % *note: consider making alpha mask also clip points outside of axislim boundaries
 alphamask(loaf.apasrf == 15|loaf.apasrf == 46|loaf.apasrf ==7|loaf.apasrf ==16|loaf.apasrf == 8|loaf.apasrf == 47|loaf.apasrf == 0)=0;
 hold on;
+
 if isfirstframe
     [m,b,xytheta,e1] = get_mb(elecs, [1 1 0], force_angle); % get line in XY plane
 
-    xslice = cos(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,1) + 128.5;
-    yslice = sin(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,2) + 128.5;
+    xslice = cos(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,1) + 128.5 + adjust_coords(1);
+    yslice = sin(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,2) + 128.5 + adjust_coords(2);
     zslice = meshgrid(1:256)';
 
     %XX, YY, ZZ are in coordinate space.
@@ -85,8 +90,8 @@ if isfirstframe
         sliceinfo(j).sagittal = 1; 
         sliceinfo(j).final_orientation = 'oc'; % oblique coronal
         
-        xslice = meshgrid(1:256)';
-        yslice = cos(yztheta).*meshgrid(-127.5:127.5) + elecs(e1,2) + 128.5;
+        xslice = meshgrid(1:256)' + adjust_coords(1);
+        yslice = cos(yztheta).*meshgrid(-127.5:127.5) + elecs(e1,2) + 128.5 + adjust_coords(2);
         zslice = sin(yztheta).*meshgrid(-127.5:127.5) + elecs(e1,3) + 128.5;
 
         %XX, YY, ZZ are in coordinate space.

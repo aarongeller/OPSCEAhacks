@@ -311,6 +311,9 @@ set(gcf, 'Position',[1 5 1280 700]);
 planes = {'a', 'c'};
 w8s = [];
 
+% these corrections make OPSCEA coordinates match brainstorm:
+adjust_coords = [-3 -4 0];
+
 for i=1:length(planes)
     S.sliceplane = planes{i};
     subplot(1,1,1); %clears all axes, to start fresh each frame
@@ -399,14 +402,14 @@ for i=1:length(planes)
                 I.nns=nns; 
                 sliceinfo(j).depthlabels=depthlabels{j};
                 if S.sliceplane=='c'
-                    OPSCEAsurfslice(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1,force_angle_coronal(j));
+                    OPSCEAsurfslice(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1,adjust_coords,force_angle_coronal(j));
                     if strcmp(sliceinfo(j).final_orientation, 'oc')
                         figure(2);
                         view(270,0); % flip surface brain to sagittal 
                         figure(1);
                     end
                 elseif S.sliceplane=='a'
-                    OPSCEAsurfslice_axial(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1,force_angle_axial(j));
+                    OPSCEAsurfslice_axial(pt,S.sliceplane,em(eNID,:),zeros(size(em(eNID,:))),opsceadatapath,[],S.cax,S.cm,S.gsp,j,1,adjust_coords,force_angle_axial(j));
                 end
                 cameratoolbar('setmode','')
                 axis off; 

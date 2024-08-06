@@ -355,6 +355,9 @@ set(gcf, 'Position',[1 5 1280 700]);
 set(gcf, 'visible',setvisible); 
 frametimpoints=jumpto:S.fram:ntp-sfx*S.iceegwin; % timepoint index of each frame to be rendered
 
+% these corrections make OPSCEA coordinates match brainstorm:
+adjust_coords = [-3 -4 0];
+
 for i=cast(frametimpoints, 'int32'); 
     if i==jumpto+2*S.fram; 
         timerem_sec=toc*length(frametimpoints); 
@@ -470,7 +473,7 @@ for i=cast(frametimpoints, 'int32');
             I.w8s=w8s; 
             I.nns=nns; 
             sliceinfo(j).depthlabels=depthlabels{j};
-            OPSCEAsurfslice(pt,S.sliceplane,em(eNID,:),w8s(eNID),opsceadatapath,[],S.cax,S.cm,S.gsp,j,isfirstframe);
+            OPSCEAsurfslice(pt,S.sliceplane,em(eNID,:),w8s(eNID),opsceadatapath,[],S.cax,S.cm,S.gsp,j,isfirstframe,adjust_coords);
             plot3(em(eNID,1),em(eNID,2)+((S.sliceplane=='c')),em(eNID,3),'k-'); % depth probe (line between electrodes)
             plot3(em(eNID,1),em(eNID,2)+((S.sliceplane=='c')),em(eNID,3),'k.','markersize',10); % depth electrodes (dots)
             cameratoolbar('setmode','')
