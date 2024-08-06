@@ -9,6 +9,7 @@ import numpy.matlib
 import pandas as pd
 from glob import glob
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 # user needs to set this variable to the Brainstorm protocol for IEEG recons
 protocolname = "IEEG_visualization"
@@ -389,9 +390,23 @@ class EDFBrainstormOpsceaMaker(BrainstormOpsceaMaker):
         super().__init__(protocolname, myargv)
         self.fs_eeg_dir = os.path.join(self.freesurfer_subjdir, 'eeg')
         self.all_eeg_files = glob(os.path.join(self.fs_eeg_dir, '*.edf'))
-        self.all_eeg_files.sort()
+        self.map_edfs()
         raw = mne.io.read_raw_edf(self.all_eeg_files[0], verbose=False)
         self.edflabels = raw.info.get('ch_names')
+
+    def map_edfs(self):
+        self.datedict = {}
+        self.filedates = []
+        for f in self.all_eeg_files:
+            thisdate = self.get_file_date(f)
+            self.filedates.append(thisdate)
+            self.datedict[thisdate] = f
+        self.filedates.sort()
+
+    def get_file_date(self, fname):
+        dayparts = "_".join(os.path.basename(fname.split("__")[0]).split("_")[1:])
+        timeparts = fname.split("__")[1].split(".")[0]
+        return datetime.strptime(dayparts + " " + timeparts, '%d_%m_%y %H_%M_%S')
 
     def filter_labels(self):
         self.edfdict = {} # map label to edf channel #
@@ -435,7 +450,8 @@ class EDFBrainstormOpsceaMaker(BrainstormOpsceaMaker):
         badch = np.transpose([np.array(badch)])
 
         # create seizure directories
-        for i,f in enumerate(self.all_eeg_files):
+        for i,d in enumerate(self.filedates):
+            f = self.datedict[d]
             print("====> Importing seizure %d from %s..." % (int(i+1), f))
             # load edf
             raw = mne.io.read_raw_edf(f, preload=True, verbose=False)
