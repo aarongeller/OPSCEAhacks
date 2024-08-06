@@ -19,9 +19,6 @@ class OpsceaMaker(ABC):
         os.environ['SUBJECTS_DIR'] = os.path.join(os.environ['FREESURFER_HOME'], "subjects")
         os.environ['PATH'] = os.environ['PATH'] + ":" + os.path.join(os.environ['FREESURFER_HOME'], "bin")
         self.freesurfer_subjdir = os.path.join(os.environ['SUBJECTS_DIR'], self.subjname)
-        self.fs_eeg_dir = os.path.join(self.freesurfer_subjdir, 'eeg')
-        self.all_eeg_files = glob(os.path.join(self.fs_eeg_dir, '*.edf'))
-        self.all_eeg_files.sort()
 
         path_to_opsceadata = os.path.join(os.environ['HOME'], "Documents/MATLAB/OPSCEA-main/OPSCEADATA")
         self.opscea_subjdir = os.path.join(path_to_opsceadata, self.subjname)
@@ -29,12 +26,6 @@ class OpsceaMaker(ABC):
         # path_to_imgpipe = "/opt/local/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/img_pipe"
 
     def handle_args(self, myargv):
-        if len(myargv) < 1:
-            print("Usage: python create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>")
-            print("\twhere SUBJ is a directory in /Applications/freesurfer/subjects")
-            print("\toptional args: hemisphere, do_subcort, do_label, low pass freq, and list of electrodes ending with a digit.")
-            quit()
-            
         self.subjname = myargv[0]
 
         if len(myargv)>1:
@@ -396,6 +387,9 @@ class EEGfilenameException(Exception):
 class EDFBrainstormOpsceaMaker(BrainstormOpsceaMaker):
     def __init__(self, protocolname, myargv):
         super().__init__(protocolname, myargv)
+        self.fs_eeg_dir = os.path.join(self.freesurfer_subjdir, 'eeg')
+        self.all_eeg_files = glob(os.path.join(self.fs_eeg_dir, '*.edf'))
+        self.all_eeg_files.sort()
         raw = mne.io.read_raw_edf(self.all_eeg_files[0], verbose=False)
         self.edflabels = raw.info.get('ch_names')
 
@@ -487,6 +481,11 @@ class EDFBrainstormOpsceaMaker(BrainstormOpsceaMaker):
         print("Done.")
 
 if __name__=="__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python create_opscea_subj.py SUBJ <rh/lh/stereo> <0/1> <0/1> <lowpass> <number-elecs>")
+        print("\twhere SUBJ is a directory in /Applications/freesurfer/subjects")
+        print("\toptional args: hemisphere, do_subcort, do_label, low pass freq, and list of electrodes ending with a digit.")
+
     parser = argparse.ArgumentParser()
     parser.add_argument('myargv', nargs='+')
     parser.add_argument('--noedf', action='store_true')
