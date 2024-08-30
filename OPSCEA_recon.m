@@ -1,4 +1,4 @@
-function OPSCEA_recon(pt, selected_leads, force_angle_coronal, force_angle_axial, dopdf)
+function OPSCEA_recon(pt, adjust_coords, selected_leads, force_angle_coronal, force_angle_axial, dopdf)
 % Do a limited (structure only) OPSCEA run for SEEG electrodes,
 % exporting coronal and axial views together with a corresponding
 % surface view illustrating the cutplane, then calling
@@ -40,6 +40,11 @@ function OPSCEA_recon(pt, selected_leads, force_angle_coronal, force_angle_axial
 
 % needs: statistics toolbox, signal processing toolbox, image
 % processing toolbox
+
+if ~exist('adjust_coords', 'var')
+    % these corrections make OPSCEA coordinates match brainstorm:
+    adjust_coords = [-3 -4 0];
+end
 
 if ~exist('showlabels','var')||isempty(showlabels)
     % default displays ICEEG and depth labels
@@ -310,9 +315,6 @@ set(gcf, 'Position',[1 5 1280 700]);
 
 planes = {'a', 'c'};
 w8s = [];
-
-% these corrections make OPSCEA coordinates match brainstorm:
-adjust_coords = [-3 -4 0];
 
 for i=1:length(planes)
     S.sliceplane = planes{i};
