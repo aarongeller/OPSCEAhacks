@@ -1,4 +1,4 @@
-function OPSCEA(pt, sz, showlabels, jumpto, timewindow, fps, setvisible)
+function OPSCEA(pt, sz, adjust_coords, showlabels, jumpto, timewindow, fps, setvisible)
 % EXAMPLE USAGE: OPSCEA(pt, sz, showlabels, jumpto, timewindow, setvisible)
 % 
 % pt is a string such as 'UCSF4' or 'JaneDoe', acts as a prefix for files below
@@ -34,6 +34,11 @@ function OPSCEA(pt, sz, showlabels, jumpto, timewindow, fps, setvisible)
 
 % needs: statistics toolbox, signal processing toolbox, image
 % processing toolbox
+
+if ~exist('adjust_coords', 'var')
+    % these corrections make OPSCEA coordinates match brainstorm:
+    adjust_coords = [-3 -4 0];
+end
 
 if ~exist('showlabels','var')||isempty(showlabels)
     % default displays ICEEG and depth labels
@@ -354,9 +359,6 @@ set(gcf, 'color','w');
 set(gcf, 'Position',[1 5 1280 700]);
 set(gcf, 'visible',setvisible); 
 frametimpoints=jumpto:S.fram:ntp-sfx*S.iceegwin; % timepoint index of each frame to be rendered
-
-% these corrections make OPSCEA coordinates match brainstorm:
-adjust_coords = [-3 -4 0];
 
 for i=cast(frametimpoints, 'int32'); 
     if i==jumpto+2*S.fram; 
