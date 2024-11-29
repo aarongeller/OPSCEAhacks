@@ -43,6 +43,7 @@ function OPSCEA_recon(pt, adjust_coords, selected_leads, force_angle_coronal, fo
 
 if ~exist('adjust_coords', 'var')
     % these corrections make OPSCEA coordinates match brainstorm:
+    % negative values shift electrodes to the viewer's right/posteriorly/down
     adjust_coords = [-3 -4 0];
 end
 
