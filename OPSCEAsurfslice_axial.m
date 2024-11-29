@@ -80,7 +80,7 @@ if isfirstframe
     YY = meshgrid(-128:128)'; % coordinates for spatial calculations and plotting
     yslice = meshgrid(1:256)' + adjust_coords(2);
     xslice = cos(theta).*meshgrid(-127.5:127.5) + elecs(e1,1) + 128.5 + adjust_coords(1);
-    zslice = sin(theta).*meshgrid(-127.5:127.5) + elecs(e1,3) + 128.5;
+    zslice = sin(theta).*meshgrid(-127.5:127.5) + elecs(e1,3) + 128.5 + adjust_coords(3);
     XX = meshgrid(-128:128).*cos(theta) + elecs(e1,1);
     ZZ = sin(theta).*meshgrid(-128:128) + elecs(e1,3); 
     sliceinfo(j).azel = [180, -90]; % for pure inferior view: [180, -90]

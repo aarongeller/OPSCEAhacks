@@ -71,7 +71,7 @@ if isfirstframe
 
     xslice = cos(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,1) + 128.5 + adjust_coords(1);
     yslice = sin(xytheta).*meshgrid(-127.5:127.5) + elecs(e1,2) + 128.5 + adjust_coords(2);
-    zslice = meshgrid(1:256)';
+    zslice = meshgrid(1:256)' + adjust_coords(3);
 
     %XX, YY, ZZ are in coordinate space.
     XX = cos(xytheta).*meshgrid(-128:128) + elecs(e1,1);
@@ -92,7 +92,7 @@ if isfirstframe
         
         xslice = meshgrid(1:256)' + adjust_coords(1);
         yslice = cos(yztheta).*meshgrid(-127.5:127.5) + elecs(e1,2) + 128.5 + adjust_coords(2);
-        zslice = sin(yztheta).*meshgrid(-127.5:127.5) + elecs(e1,3) + 128.5;
+        zslice = sin(yztheta).*meshgrid(-127.5:127.5) + elecs(e1,3) + 128.5 + adjust_coords(3);
 
         %XX, YY, ZZ are in coordinate space.
         XX = meshgrid(-128:128)'; % coordinates for spatial calculations and plotting
