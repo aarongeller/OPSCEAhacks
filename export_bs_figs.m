@@ -31,6 +31,7 @@ save(channel_mat, s{:});
 
 gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
 [hFig, iDS, iFig] = view_channels_3d({channel_mat}, 'SEEG', 'cortex', 1, 0);
+set(hFig, 'Position', [10 10 692 572]);
 
 views = {'left', 'right', 'bottom', 'front'};
 output_prefix = 'SEEG_3D_';
