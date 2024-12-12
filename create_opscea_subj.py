@@ -239,7 +239,7 @@ class BrainstormOpsceaMaker(OpsceaMaker):
             raise Exception("No valid channel.mat was found. Please find a valid channel.mat.")
         print("====> Selected %d EDF channels." % len(self.contiguous_labels))
 
-        brainstorm_anat_path = os.path.join(path_to_brainstormdb, "anat", self.subjname, "subjectimage_MRI.mat")
+        brainstorm_anat_path = os.path.join(path_to_brainstormdb, "anat", self.subjname, "subjectimage_MRI_T1.mat")
         elecmatrix = self.do_mri_coordinate_transformation(elecmatrix, brainstorm_anat_path)
 
         if not os.path.isdir(os.path.join(self.freesurfer_subjdir, "elecs")):
