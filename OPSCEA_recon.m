@@ -4,11 +4,13 @@ function OPSCEA_recon(pt, adjust_coords, selected_leads, force_angle_coronal, fo
 % surface view illustrating the cutplane, then calling
 % make_slice_pdf.py to collect them in a pdf.
 %
-% EXAMPLE USAGE: OPSCEA_recon(pt, selected_leads, force_angle_coronal, force_angle_axial, dopdf)
+% EXAMPLE USAGE: OPSCEA_recon(pt, adjust_coords, selected_leads, force_angle_coronal, force_angle_axial, dopdf)
 % 
 % pt is a string such as 'UCSF4' or 'JaneDoe', acts as a prefix for files below
 %
 % optional parameters:
+% adjust_coords: negative values shift electrodes to the viewer's
+%                right/posteriorly/down; default [-2 -4 0]
 % selected_leads: e.g. {'LAH', 'RAM'}
 % force_angle_coronal: e.g. [13, 27]; if length is nonzero it must
 %                      match length of selected_leads
@@ -44,7 +46,7 @@ function OPSCEA_recon(pt, adjust_coords, selected_leads, force_angle_coronal, fo
 if ~exist('adjust_coords', 'var')
     % these corrections make OPSCEA coordinates match brainstorm:
     % negative values shift electrodes to the viewer's right/posteriorly/down
-    adjust_coords = [-3 -4 0];
+    adjust_coords = [-2 -4 0];
 end
 
 if ~exist('showlabels','var')||isempty(showlabels)
