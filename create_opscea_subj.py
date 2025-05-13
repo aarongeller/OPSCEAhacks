@@ -232,8 +232,9 @@ class BrainstormOpsceaMaker(OpsceaMaker):
                     break
             except DollarException:
                 print("WARNING: Skipping channel mat " + f + " because of $ in channel name.")
-            except ChanfileException:
+            except ChanfileException as cfe:
                 print("WARNING: Skipping channel mat " + f + ".")
+                print(cfe)
 
         if not found_good_elecmatrix:
             raise Exception("No valid channel.mat was found. Please find a valid channel.mat.")
@@ -330,6 +331,9 @@ class BrainstormOpsceaMaker(OpsceaMaker):
                 else:
                     self.contiguous_labels.append(k + str(int(i+1)))
 
+        if len(self.contiguous_labels)==0:
+            raise ChanfileException("Could not find channel labels.")
+
     def do_mri_coordinate_transformation(self, bsmatrix, bs_anat_path):
         # transform brainstorm (SCS) coordinates to World coordinates (via
         # MRI coodinates)
@@ -416,7 +420,7 @@ class EDFBrainstormOpsceaMaker(BrainstormOpsceaMaker):
             label = self.remove_spacers(e[0]) # handle underscore/space
             if label not in non_seeg_channels:
                 for k,edl in enumerate(self.edflabels):
-                    if (edl[0:4]=='POL ' or edl[0:4]=='EEG ') and self.remove_spacers(edl[4:])==label:
+                    if edl[0:4] in ['POL ', 'EEG '] and self.remove_spacers(edl[4:])==label:
                         included_labels.append(label)
                         self.edfdict[label] = k
                         break
