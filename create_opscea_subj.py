@@ -416,7 +416,7 @@ class EDFBrainstormOpsceaMaker(BrainstormOpsceaMaker):
             label = self.remove_spacers(e[0]) # handle underscore/space
             if label not in non_seeg_channels:
                 for k,edl in enumerate(self.edflabels):
-                    if edl[0:4]=='POL ' and self.remove_spacers(edl[4:])==label:
+                    if (edl[0:4]=='POL ' or edl[0:4]=='EEG ') and self.remove_spacers(edl[4:])==label:
                         included_labels.append(label)
                         self.edfdict[label] = k
                         break
