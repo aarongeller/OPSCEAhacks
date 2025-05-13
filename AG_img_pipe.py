@@ -460,7 +460,7 @@ class freeCoG:
                               skip_header=2)
             vertnum, x, y, z, junk=d[~np.isnan(d)].reshape((-1,5)).T
             for v in vertnum:
-                vert_label[np.int(v)] = label_name.strip()
+                vert_label[int(v)] = label_name.strip()
             fid.close()
 
         if self.hem in ['lh','rh']:
