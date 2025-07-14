@@ -132,7 +132,7 @@ class OpsceaMaker(ABC):
                 stem = thisstem
                 ofname = thisstem + "_labels.tex"
                 outf = open(os.path.join(outputdir, ofname), 'w')
-            outf.write(ll[1] + ' & ' + ll[3].replace('_', '\_') + ' \\\\\n')
+            outf.write(ll[1] + ' & ' + ll[3].replace('_', '\\_') + ' \\\\\n')
         outf.close()
 
     def make_cell_array(self, lis):
