@@ -307,7 +307,7 @@ class freeCoG:
         scipy.io.savemat(outfile, {'tri': subcort_tri, 'vert': subcort_vert})  # save tri/vert matrix
 
         # convert inds to scipy mat
-        subcort_inds = scipy.mat(subcort_inds)
+        # subcort_inds = scipy.mat(subcort_inds)
         scipy.io.savemat('%s_subcort_inds.mat' %
                          (nuc), {'inds': subcort_inds})  # save inds
         
