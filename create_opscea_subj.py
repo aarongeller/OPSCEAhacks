@@ -511,6 +511,8 @@ if __name__=="__main__":
     parser.add_argument('--noedf', action='store_true')
     args = parser.parse_args()
     if args.noedf:
+        # Brainstorm workflow for non-EDF recons:
+        # https://neuroimage.usc.edu/brainstorm/Tutorials/Epileptogenicity#Editing_implantation_without_recordings
         om = BrainstormOpsceaMaker(protocolname, args.myargv)
     else:
         om = EDFBrainstormOpsceaMaker(protocolname, args.myargv)
