@@ -81,8 +81,13 @@ split.vert = [];
 split.tri = [];
 
 if isempty(idx)
-    split.vert = cortex.cortex.vert;
-    split.tri = cortex.cortex.tri;
+    if ~strcmp(orientation, 's')
+        % if we're in sagittal mode and there is no split, then we are working
+        % with the L hemisphere and need to *omit* the whole hemisphere;
+        % otherwise include all of it
+        split.vert = cortex.cortex.vert;
+        split.tri = cortex.cortex.tri;
+    end
 else
     mesh.tri = delete_verts(cortex.cortex.tri, idx);        
     mesh.vert = cortex.cortex.vert;
