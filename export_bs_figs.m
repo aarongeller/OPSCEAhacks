@@ -16,15 +16,17 @@ end
 load(channel_mat);
 [~, labelsort] = sort(labels);
 [~, iesort] = sort({IntraElectrodes.Name}); % usually will be sorted unless noedf
+label_rows_to_skip = 3;
 adjustnum = 0;
 for i=1:length(IntraElectrodes)
-    if i+3-adjustnum > length(labelsort)
+    if i + label_rows_to_skip - adjustnum > length(labelsort)
         break;
-    elseif ~strcmp(IntraElectrodes(iesort(i)).Name, labels{labelsort(i+3-adjustnum)})
+    elseif ~strcmp(IntraElectrodes(iesort(i)).Name, ...
+                   labels{labelsort(i + label_rows_to_skip - adjustnum)})
         % handle case where IntraElectrodes has non-SEEG channels
         adjustnum = adjustnum + 1;
     else
-        IntraElectrodes(iesort(i)).Color = colors{labelsort(i+3-adjustnum)};
+        IntraElectrodes(iesort(i)).Color = colors{labelsort(i + label_rows_to_skip - adjustnum)};
     end
 end
 s = who('-file', channel_mat);
