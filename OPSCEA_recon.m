@@ -543,8 +543,8 @@ for i=1:length(planes)
 end
 
 if dopdf
-    close all;
     if ~exist('selected_leads', 'var')
+        close all;
         export_bs_figs(pt, channel_mat, [ptpath 'Imaging/Recon/figs'], depthcolor, depthlabels);
     end
     system(['python make_slice_pdf.py ' pt]);
