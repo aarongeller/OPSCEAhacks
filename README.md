@@ -5,7 +5,8 @@ My mods to the [UCSF OPSCEA project](https://github.com/Kleen-Lab/OPSCEA) (March
 
 ### Main functionality added:
 1. Using [Brainstorm](https://neuroimage.usc.edu/brainstorm/Introduction) for electrode localization;
-2. A function, `OPSCEA_recon`, that exports slice images (without EEG heatmaps, including both coronal and axial/sagittal views) and compiles a pdf document of the reconstruction.
+2. A function, `OPSCEA_recon`, that exports slice images (without EEG heatmaps, including both coronal and axial/sagittal views) and compiles a pdf document of the reconstruction;
+3. Improved version of `splitbrain.m` that prevents flipping of brains away from viewer.
 
 ### Minor tweaks:
 1. Simplified interface for `OPSCEAparams.xls`, that eliminates the need to specify the extreme contacts and desired color code for each electrode.
