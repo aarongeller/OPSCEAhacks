@@ -104,12 +104,19 @@ elseif ~isempty(idx)
         if orientation_good(fv.vert, m, b, orientation)
             foundgood = 1;
             break;
+        elseif i==1
+            break;
         end
         display(['splitFV chose wrong submesh, trying submesh #' int2str(svinds(i-1)) '...']);
     end
 
     if foundgood
         split = fv;
+    elseif ~isempty(idx)
+        beep; pause(0.25); beep;
+        meshind = input('*** Automated submesh selection failed! Enter submesh to use. *** ');
+        fv.vert = FVout(meshind).vertices;
+        fv.tri = FVout(meshind).faces;
     end
 end
 
