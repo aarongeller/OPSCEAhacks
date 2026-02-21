@@ -105,6 +105,7 @@ elseif ~isempty(idx)
             foundgood = 1;
             break;
         elseif i==1
+            % no submesh looked good
             break;
         end
         display(['splitFV chose wrong submesh, trying submesh #' int2str(svinds(i-1)) '...']);
@@ -115,8 +116,8 @@ elseif ~isempty(idx)
     elseif ~isempty(idx)
         beep; pause(0.25); beep;
         meshind = input('*** Automated submesh selection failed! Enter submesh to use. *** ');
-        fv.vert = FVout(meshind).vertices;
-        fv.tri = FVout(meshind).faces;
+        split.vert = FVout(meshind).vertices;
+        split.tri = FVout(meshind).faces;
     end
 end
 
