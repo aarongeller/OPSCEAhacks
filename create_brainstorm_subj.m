@@ -44,7 +44,7 @@ file_delete(file_fullpath(postimplantct), 1);
 db_reload_subjects(iSubject);
 
 if ~noeeg
-    review_raw_all(subj, norename);
+    review_raw_all(subj, protocolname, norename);
 end
 
 toc;
