@@ -43,7 +43,7 @@ function OPSCEA_recon(pt, adjust_coords, selected_leads, force_angle_coronal, fo
 % needs: statistics toolbox, signal processing toolbox, image
 % processing toolbox
 
-if ~exist('adjust_coords', 'var')
+if ~exist('adjust_coords', 'var') || isempty(adjust_coords)
     % these corrections make OPSCEA coordinates match brainstorm:
     % negative values shift electrodes to the viewer's right/posteriorly/down
     adjust_coords = [-2 -4 0];
