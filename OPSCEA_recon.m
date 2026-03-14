@@ -80,21 +80,29 @@ ptpath=[opsceadatapath pt '/']; % patient's folder
 
 %% Import parameters
 % for specific seizure 
-[~,prm_allPtSz]=xlsread([opsceapath 'OPSCEAparams'],'params'); 
-fields_SZ=prm_allPtSz(1,:); % header for columns of seizure parameters
-prm=prm_allPtSz(strcmp(pt,prm_allPtSz(:,1))&strcmp(sz,prm_allPtSz(:,2)),:);
-if isempty(prm); error(['ATTENTION: No entry exists for ' pt ' seizure ' sz ' in the params master sheet']); end
+opts = detectImportOptions([opsceapath 'OPSCEAparams']);
+opts.Sheet = "params";
+prm_allPtSz = readtable([opsceapath 'OPSCEAparams'], opts);
+fields_SZ = prm_allPtSz.Properties.VariableNames;
+prm = prm_allPtSz(strcmp(pt,table2array(prm_allPtSz(:, 1))) & ...
+                  strcmp(sz,table2array(prm_allPtSz(:, 2))), :);
+if isempty(prm)
+    error(['ATTENTION: No entry exists for ' pt ' seizure ' sz ' in the params master sheet']);
+end
+
 % Import parameters for patient's specific plot (layout of video frame)
-[~,plt]=xlsread([opsceapath 'OPSCEAparams'],pt); 
-fields_PLOT=plt(1,:); plt(1,:)=[]; % header for columns of plotting parameters
-plottype=plt(:,strcmpi(fields_PLOT,'plottype')); %type of plot for each subplot (accepts: iceeg, surface, depth, or colorbar)
+opts.Sheet = pt;
+plt = readtable([opsceapath 'OPSCEAparams'], opts);
+max_fields_num = 11;
+fields_PLOT = plt.Properties.VariableNames(1:max_fields_num);
+plottype = table2array(plt(:,{'plottype'})); %type of plot for each subplot (accepts: iceeg, surface, depth, or colorbar)
 
 if ~exist('selected_leads', 'var')
     rows_to_do = 1:size(plt,1);
     force_angle_coronal = nan(1, size(plt,1));
     force_angle_axial = nan(1, size(plt,1));
 else
-    rows_to_do = get_matching_labels(plt(:,end), selected_leads);
+    rows_to_do = get_matching_labels(table2array(plt(:,{'depthlabels'})), selected_leads);
     num_to_do = length(rows_to_do) - 3;
 
     if exist('force_angle_coronal', 'var')
@@ -134,19 +142,20 @@ end
 
 cd 
 %% prepare subplot specifications
-subplotrow=str2double(plt(:,strcmpi(fields_PLOT,'subplotrow')));
-subplotcolumn=str2double(plt(:,strcmpi(fields_PLOT,'subplotcolumn')));
-subplotstart=plt(:,strcmpi(fields_PLOT,'subplotstart')); 
-subplotstop=plt(:,strcmpi(fields_PLOT,'subplotstop')); 
+subplotrow = str2double(table2array(plt(:, {'subplotrow'})));
+subplotcolumn = str2double(table2array(plt(:, {'subplotcolumn'})));
+subplotstart = table2array(plt(:, strcmpi(fields_PLOT,'subplotstart')));
+subplotstop = table2array(plt(:, strcmpi(fields_PLOT,'subplotstop')));
 for j=1:length(plottype); 
     subplotnum{j,1}=str2double(subplotstart{j}):str2double(subplotstop{j});
 end
-surfaces=plt(:,strcmpi(fields_PLOT,'surfaces'));
-surfacesopacity=plt(:,strcmpi(fields_PLOT,'surfacesopacity'));
-viewangle=lower(plt(:,strcmpi(fields_PLOT,'viewangle')));
+surfaces = table2array(plt(:, {'surfaces'}));
+surfacesopacity = table2array(plt(:,{'surfacesopacity'}));
+viewangle = lower(table2array(plt(:,{'viewangle'})));
 
 %% parcel all individual depth labels, contact #s, and colors. If no depths, make it  =[];
-depthlabels=plt(:,strcmpi(fields_PLOT,'depthlabels'));
+% depthlabels = plt(:,strcmpi(fields_PLOT,'depthlabels'));
+depthlabels = table2array(plt(:,{'depthlabels'}));
 isdepth=strcmpi(plottype,'depth'); 
 depths=cell(size(isdepth));
 if any(isdepth)
@@ -187,19 +196,21 @@ if any(isdepth)
             depthcolor{j}=str2double(splt); 
         end         
     end
-    pltzoom=str2double(plt(:,strcmpi(fields_PLOT,'pltzoom')));
-    pltshowplanes=str2double(plt(:,strcmpi(fields_PLOT,'showplanes')))==1; %logical index of plots in which to show slice planes
+    pltzoom=str2double(table2array(plt(:, {'pltzoom'})));
+    pltshowplanes = str2double(table2array(plt(:, {'showplanes'})))==1; %logical index of plots in which to show slice planes
 end
 
 % these settings are not actually used for OPSCEA_recon
-S.cax=str2double(regexp(prm{strcmp('cax',fields_SZ)},',','split'));
-cm=prm{strcmp('cm',fields_SZ)};
+cax_cell = regexp(table2array(prm(:,{'cax'})), ',', 'split');
+S.cax = str2double(cax_cell{1});
+cm_cell = table2array(prm(:, {'cm'}));
+cm = cm_cell{1};
 switch cm;
   case 'cmOPSCEAcool'; cm=cmOPSCEAcool;
   case 'cmOPSCEAjet'; cm=cmOPSCEAjet;
 end
-S.cm=cm; %colormap to use for heatmap
-S.gsp=str2double(prm{strcmp('gsp',fields_SZ)}); %gaussian spreading parameter (default 10)
+S.cm = cm; %colormap to use for heatmap
+S.gsp = str2double(table2array(prm(:, {'gsp'}))); %gaussian spreading parameter (default 10)
 
 S.prm=prm; clear prm
 S.prm_allPtSz=prm_allPtSz; clear prm_allPtSz
