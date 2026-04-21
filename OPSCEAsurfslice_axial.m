@@ -74,6 +74,9 @@ if isfirstframe
     if maxgrad==3
         orientation = 's';
         sliceinfo(j).sagittal = 1;
+        if theta < 0  % need to flip
+            theta = theta + pi;
+        end
     else
         sliceinfo(j).sagittal = 0;
     end
