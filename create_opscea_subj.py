@@ -21,6 +21,9 @@ class OpsceaMaker(ABC):
         os.environ['PATH'] = os.environ['PATH'] + ":" + os.path.join(os.environ['FREESURFER_HOME'], "bin")
         self.freesurfer_subjdir = os.path.join(os.environ['SUBJECTS_DIR'], self.subjname)
 
+        if not os.path.exists(self.freesurfer_subjdir):
+            raise Exception("Subject directory not found: " + self.freesurfer_subjdir)
+
         path_to_opsceadata = os.path.join(os.environ['HOME'], "Documents/MATLAB/OPSCEA-main/OPSCEADATA")
         self.opscea_subjdir = os.path.join(path_to_opsceadata, self.subjname)
 
