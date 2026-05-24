@@ -52,3 +52,10 @@ for i=1:length(views)
 end
 
 close all;
+
+% export + edit electrodes_tsv
+outputchannel_prefix = join({ch_mat_parts{2:8}}, "/");
+outputchannel_prefix = "/" + outputchannel_prefix;
+outputchannel_path = convertStringsToChars(outputchannel_prefix + "/" + subj + "_electrodes.tsv");
+export_channel(channel_mat, outputchannel_path, "BIDS-MNI-MM", 0);
+system(['python edit_electrodes_tsv.py ' subj]);
