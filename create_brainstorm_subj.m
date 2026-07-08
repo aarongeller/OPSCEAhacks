@@ -23,6 +23,10 @@ fssubjdir = fullfile(fsdir, subj);
 ctdir = fullfile(fssubjdir, 'ct');
 ctfile = dir(fullfile(ctdir, '*.nii.gz'));
 
+if ~exist(fssubjdir, 'dir')
+    error(['No FreeSurfer dirctory ' subj ', quitting.']);
+end
+
 protocolname = 'IEEG_visualization';
 gui_brainstorm('SetCurrentProtocol', bst_get('Protocol', protocolname));
 
