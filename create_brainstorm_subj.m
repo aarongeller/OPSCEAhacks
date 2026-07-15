@@ -23,6 +23,10 @@ if ~exist(fssubjdir, 'dir')
     error(['No FreeSurfer directory ' subj ', quitting.']);
 end
 
+if ~exist(ctdir, 'dir')
+    error(['No ct directory for ' subj ', quitting.']);
+end
+
 if ~noeeg && ~exist(eegdir, 'dir')
     error(['No eeg directory for ' subj ', quitting.']);
 end
