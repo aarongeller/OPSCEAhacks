@@ -5,11 +5,6 @@ function create_brainstorm_subj(subj, noeeg, norename)
 
 tic;
 
-% check if brainstorm is running and if not, start it
-if ~brainstorm('status')
-    brainstorm;
-end
-
 if ~exist('noeeg', 'var')
     noeeg = 0;
 end
@@ -21,10 +16,20 @@ end
 fsdir = '/Applications/freesurfer/subjects';
 fssubjdir = fullfile(fsdir, subj);
 ctdir = fullfile(fssubjdir, 'ct');
+eegdir = fullfile(fssubjdir, 'eeg');
 ctfile = dir(fullfile(ctdir, '*.nii.gz'));
 
 if ~exist(fssubjdir, 'dir')
-    error(['No FreeSurfer dirctory ' subj ', quitting.']);
+    error(['No FreeSurfer directory ' subj ', quitting.']);
+end
+
+if ~noeeg && ~exist(eegdir, 'dir')
+    error(['No eeg directory for ' subj ', quitting.']);
+end
+
+% check if brainstorm is running and if not, start it
+if ~brainstorm('status')
+    brainstorm;
 end
 
 protocolname = 'IEEG_visualization';
