@@ -192,6 +192,7 @@ load([szpath szfname]);
 load([szpath ptsz '_badch']); 
 if size(d,1)>size(d,2); d=d'; end % orient to channels by samples
 [nch,ntp]=size(d); f=1; 
+% adjust nch based on what to plot
 disp(['Length of data to play for video is ' num2str(round(ntp/sfx)) ' sec'])
 
 % error checks for selected time periods
@@ -266,29 +267,39 @@ if exist('Rhipp', 'var') && exist('Ramyg', 'var') && exist('extendedObjectMesh')
     loaf.rpial.cortex = Rcrtx;
 end
 
-drows=find(strcmp(plottype,'depth'))'; ndepths=length(drows);
-depthch=[]; 
-for i=1:length(drows) 
-    depthch=[depthch depths{drows(i)}]; 
-end; 
-clear i %identify all depth electrode channels
-
 isR=em(:,1)>0; 
 isR=nansum(em(:,1))>0; % doesn't make sense to take sum over all contacts...
 isL=isR~=1; %handy binary indicators for laterality
 
 isRdepth = [];
 isLdepth = [];
+total_channels = 0;
+channel_ind_mat = [];
+depth_channel_map = {};
 for i=1:length(depths)
-    if ~isnan(depths{i})        
+    if ~isnan(depths{i})
+        depth_channel_map{end+1} = [(total_channels + 1):(total_channels ...
+                                                          + length(depths{i}))];
+        total_channels = total_channels + length(depths{i});
+        channel_ind_mat(end+1,:) = [depths{i}(1) depths{i}(end)];
+
         xval_highcontact = em(depths{i}(end),1);
         isRdepth(end+1) = xval_highcontact>=0;
         isLdepth(end+1) = xval_highcontact<0;
     else
+        depth_channel_map{end+1} = [];
         isRdepth(end+1) = nan;
         isLdepth(end+1) = nan;
     end
 end
+
+
+drows=find(strcmp(plottype,'depth'))'; ndepths=length(drows);
+depthch=[];
+for i=1:length(drows)
+    depthch=[depthch depth_channel_map{drows(i)}];
+end;
+clear i %identify all depth electrode channels
 
 %% get xyz limits for plotting purposes
 perim=1; % how many millimeters away from brain/electrodes boundaries to set the colorcoded plane perimeter, recommend >0 to avoid skimming brain surface (default 1mm)
@@ -299,12 +310,41 @@ axislim=reshape(axl,1,6)+[-1 1 -1 1 -1 1]*perim; clear axl %Use the, to define t
 
 %% formatting checks, and consolidation of bad channels
 ns=unique( [find(badch);   find(isnan(mean(em,2)));   find(isnan(mean(d,2)))]  ); % bad channels: those that are pre-marked, or if NaNs in their coordinates or ICEEG data traces
-nns=true(nch,1); nns(ns)=0; %nns=find(nns); %consolidate bad channels and those with NaNs
+nns=true(nch,1);
+nns(ns)=0; %nns=find(nns); %consolidate bad channels and those with NaNs
 %remove data channels previously clipped at end. Only include that which has electrode coordinates (intracranial)
-if size(em,1)>size(d,1); nch=size(em,1); d(nch+1:end,:)=[]; LL(nch+1:end,:)=[]; nns(nch+1:end)=[]; ns(ns>size(em,1))=[]; 
-   fprintf(2, 'ALERT: Clipping off extra bad channel entries (make sure you have the right ICEEG and bad channel files loaded)\n');
+if size(em,1)>size(d,1)
+    nch=size(em,1);
+    d(nch+1:end,:)=[];
+    LL(nch+1:end,:)=[];
+    nns(nch+1:end)=[];
+    ns(ns>size(em,1))=[];
+    fprintf(2, 'ALERT: Clipping off extra bad channel entries (make sure you have the right ICEEG and bad channel files loaded)\n');
 end
 
+d2 = zeros(total_channels, size(d,2));
+nns2 = zeros(size(total_channels));
+em2 = zeros(total_channels, 3);
+rows_copied = 0;
+eleclabels2 = {};
+for i=1:size(channel_ind_mat,1)
+    rows_this_depth = channel_ind_mat(i,2) - channel_ind_mat(i,1) + ...
+        1;
+    d2((rows_copied + 1):(rows_copied + rows_this_depth), :) = ...
+        d(channel_ind_mat(i,1):channel_ind_mat(i,2),:);
+    thisrowlabels = {eleclabels{channel_ind_mat(i,1):channel_ind_mat(i,2)}};
+    eleclabels2 = [eleclabels2, thisrowlabels];
+    nns2((rows_copied + 1):(rows_copied + rows_this_depth), :) = ...
+        nns(channel_ind_mat(i,1):channel_ind_mat(i,2),:);
+    em2((rows_copied + 1):(rows_copied + rows_this_depth), :) = ...
+        em(channel_ind_mat(i,1):channel_ind_mat(i,2),:);
+    rows_copied = rows_copied + rows_this_depth;
+end
+
+d = d2;
+nns = logical(nns2);
+eleclabels = eleclabels2';
+em = em2;
 
 %% ICEEG data processing and transform
 
@@ -323,7 +363,7 @@ end
 %Normalize LL (to baseline period) as z-scores, "zLL"
 BLstartsample = cast(max([sfx*S.BLperiod(1) 1]), 'uint32'); 
 BLendsample = cast(sfx*S.BLperiod(2), 'uint32'); 
-for i=1:nch % z-score using channel-specific baseline
+for i=1:total_channels % z-score using channel-specific baseline
     LL(i,:)=(LL(i,:)-nanmean(LL(i,BLstartsample:BLendsample)))/nanstd(LL(i,BLstartsample:BLendsample)); 
 end 
 
@@ -350,7 +390,7 @@ sliceinfo=[]; loaf.vrf=[]; loaf.apasrf=[]; loaf.normloaf=[]; ...
 sliceinfo.viewangle=zeros(size(plt,1),3); sliceinfo.azel=[]; ...
 sliceinfo.corners=[]; loaf.isR=isR; loaf.isL=isL; loaf.isRdepth=isRdepth; loaf.isLdepth=isLdepth;
 clear F; 
-ytl=eleclabels(nns,1); 
+ytl=eleclabels(nns);
 nch=length(find(nns)); 
 
 chanorder=1:size(d(nns,:),1); if ~showlabels; chanorder=randperm(size(d(nns,:),1)); end % if desired, blinds user by randomizing channel order
@@ -463,7 +503,7 @@ for i=cast(frametimpoints, 'int32');
         set(gca,'Clipping','off');
         clear srfplot
       case 'DEPTH' %plot depth electrode with parallel slice (plus surface behind it)
-        eN=depths{j}; 
+        eN=depth_channel_map{j};
         [eNID,~,~]=intersect(find(nns),eN); %Get the specific channels for this depth, ignoring bad channels
         if isempty(eNID)
             axis off; 
