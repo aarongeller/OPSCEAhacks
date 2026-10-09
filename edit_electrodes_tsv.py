@@ -19,16 +19,11 @@ def driver(channeltsv):
     df.sort_values(by=["name"], key=lambda x: x.map(channel_key), inplace=True)
 
     max_contact_dict = {}
-    stem = ''
-    num = ''
-    for i,c in enumerate(df["name"]):
-        thisstem = re.match(r'^([A-Za-z]+)', c).group()
-        if thisstem!=stem: # it's a new stem
-            if i>0:
-                max_contact_dict[stem] = num
-            stem = thisstem
-        else:
-            num = int(re.findall(r'(\d+)$', c)[0])
+    for c in df["name"]:
+        m = re.match(r'^([A-Za-z]+)(\d+)$', c)
+        if m:
+            stem, num = m.group(1), int(m.group(2))
+            max_contact_dict[stem] = max(max_contact_dict.get(stem, 0), num)
 
     # drop rows starting with XXX
     df = df[~df["name"].str.startswith("XXX")]
@@ -38,6 +33,9 @@ def driver(channeltsv):
     electrode_diameter = 0.8 # mm
     surface_area = 2*math.pi*electrode_diameter*0.5*contact_length
     dixi_contact_nums = [8, 10, 12, 15, 18]
+
+    # brainstorm leaves size empty, so pandas reads it as float; allow strings
+    df["size"] = df["size"].astype(object)
 
     for k in max_contact_dict.keys():
         if max_contact_dict[k] not in dixi_contact_nums:
@@ -51,8 +49,9 @@ if __name__=="__main__":
     if len(sys.argv)<2:
         subjlist = ["UCHAK240403", "UCHAM250108", "UCHDR220801",
                     "UCHDR240313", "UCHGG230823", "UCHJR250122", "UCHSM240205",
-                    "UCHSN230406", "UCHTD250331", "UCHVG230719"]
-        hasshort = ['UCHSN230406', 'UCHGG230823', 'UCHVG230719', 'UCHDR220801', 'UCHAK240403']
+                    "UCHSN230406", "UCHTD250331", "UCHVG230719", "UCHMD260624"]
+        hasshort = ['UCHSN230406', 'UCHGG230823', 'UCHVG230719', 'UCHDR220801',
+                    'UCHAK240403', 'UCHMD260624']
 
         for s in subjlist:
             if s in hasshort:
