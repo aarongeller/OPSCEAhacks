@@ -423,11 +423,10 @@ class EDFBrainstormOpsceaMaker(BrainstormOpsceaMaker):
     def filter_labels(self):
         self.edfdict = {} # map label to edf channel #
         included_labels = []
-        non_seeg_channels = ["SpO2", "EtCO2", "Pulse", "CO2Wave", "EKG", "EKG1", "EKG2", \
-                             "BP1", "BP2", "BP3", "BP4", "Annotations"]
+        non_seeg_channels = ["SpO2", "EtCO2", "Pulse", "CO2Wave", "EKG", "BP", "Annotations", "SPAC"]
         for e in self.bslabels:
             label = self.remove_spacers(e[0]) # handle underscore/space
-            if label not in non_seeg_channels:
+            if not any(label.startswith(x) for x in non_seeg_channels):
                 for k,edl in enumerate(self.edflabels):
                     if edl[0:4] in ['POL ', 'EEG '] and self.remove_spacers(edl[4:])==label:
                         included_labels.append(label)
